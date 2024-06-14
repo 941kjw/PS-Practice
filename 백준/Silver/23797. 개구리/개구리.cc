@@ -2,6 +2,12 @@
 
 using namespace std;
 
+void countFrogs(int& a, int& b) {
+	a++;
+	if (b)
+		b--;
+}
+
 int main() {
 
 	ios::sync_with_stdio(false);
@@ -14,19 +20,8 @@ int main() {
 	int k = 0, p = 0;
 	int ans = 1;
 
-	s[0] == 'K' ? k++ : p++;
-
-	for (int i = 1; i < s.size(); i++) {
-		if (s[i] == 'K') {
-			k++;
-			if (p > 0)
-				p--;
-		}
-		else {
-			p++;
-			if (k > 0)
-				k--;
-		}
+	for (int i = 0; i < s.size(); i++) {
+		s[i] == 'K' ? countFrogs(k, p) : countFrogs(p, k);
 		ans = max(ans, max(k, p));
 	}
 
