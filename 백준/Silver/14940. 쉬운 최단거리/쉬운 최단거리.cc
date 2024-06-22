@@ -26,6 +26,7 @@ int main() {
 				target = { i,j };
 			if (!x)
 				distInfo[i][j] = 0;
+
 			mapInfo[i][j] = x;
 		}
 	}
@@ -35,21 +36,22 @@ int main() {
 	distInfo[target.first][target.second] = 0;
 
 	while (!q.empty()) {
-		pair<int, int> cur = q.front();
-		q.pop();
-		int curdist = distInfo[cur.first][cur.second];
+		
+		int curdist = distInfo[q.front().first][q.front().second];
 
 		for (int i = 0; i < 4; i++) {
-			int ny = cur.first + dy[i];
-			int nx = cur.second + dx[i];
+			int ny = q.front().first + dy[i];
+			int nx = q.front().second + dx[i];
 
 			if (nx < 0 || ny < 0 || nx >= m || ny >= n)
 				continue;
 			if (mapInfo[ny][nx] != 0 && distInfo[ny][nx] == -1) {
-				distInfo[ny][nx] = distInfo[cur.first][cur.second] + 1;
+				distInfo[ny][nx] = curdist + 1;
 				q.push({ ny,nx });
 			}
 		}
+
+		q.pop();
 	}
 
 	for (int i = 0; i < n; i++) {
