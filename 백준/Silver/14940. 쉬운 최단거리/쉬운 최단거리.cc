@@ -5,7 +5,7 @@ using namespace std;
 int n, m;
 int dx[4] = { 1,-1,0,0 };
 int dy[4] = { 0,0,1,-1 };
-pair<int, int> target = { -1,-1 };
+pair<int, int> target;
 vector<vector<int>> mapInfo;
 vector<vector<int>> distInfo;
 
@@ -18,20 +18,21 @@ int main() {
 
 	mapInfo = vector<vector<int>>(n, vector<int>(m));
 	distInfo = vector<vector<int>>(n, vector<int>(m,-1));
-
+	int x;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < m; j++) {
-			cin >> mapInfo[i][j];
-			if (target.first == -1 &&  mapInfo[i][j] == 2)
+			cin >> x;
+			if (x == 2)
 				target = { i,j };
-			if (!mapInfo[i][j])
+			if (!x)
 				distInfo[i][j] = 0;
+			mapInfo[i][j] = x;
 		}
 	}
 
-	queue<pair<int, int>> q = queue<pair<int,int>>();
+	queue<pair<int, int>> q;
 	q.push(target);
-	distInfo[target.first][target.second] = 1;
+	distInfo[target.first][target.second] = 0;
 
 	while (!q.empty()) {
 		pair<int, int> cur = q.front();
@@ -53,8 +54,6 @@ int main() {
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < m; j++) {
-			if (distInfo[i][j] > 0)
-				distInfo[i][j]--;
 			cout << distInfo[i][j] << ' ';
 		}
 		cout << '\n';
