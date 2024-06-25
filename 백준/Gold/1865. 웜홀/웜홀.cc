@@ -1,61 +1,72 @@
 #include <iostream>
+#include <string>
 #include <vector>
-#include <algorithm>
+
+#define MAX 30'000'000
 
 using namespace std;
 
-vector<pair<pair<int, int>, int>> v;
-int dist[501];
+int n, m, w;
 
-void bellmanFord(int n) {
-    for (int i = 0; i < n; i++) {
-        for (int pos = 0; pos < v.size(); pos++) {
-            int from = v[pos].first.first;
-            int to = v[pos].first.second;
-            int cost = v[pos].second;
+struct edge {
+	int s, e, t;
+};
 
-            if (dist[from] + cost < dist[to]) dist[to] = dist[from] + cost;
-        }
-    }
+bool time_travel(int n, vector<edge> edges) {
+	vector<int> dist(n + 1, MAX);
 
-    for (int pos = 0; pos < v.size(); pos++) {
-        int from = v[pos].first.first;
-        int to = v[pos].first.second;
-        int cost = v[pos].second;
-        if (dist[from] + cost < dist[to]) {
-            cout << "YES\n";
-            return;
-        }
-    }
+	int s, e, t;
+	dist[1] = 0;
+	for (int i = 1; i < n; i++) {
+		for (int j = 0; j < edges.size(); j++) {
+			s = edges[j].s;
+			e = edges[j].e;
+			t = edges[j].t;
+			if (dist[e] > dist[s] + t) {
+				dist[e] = dist[s] + t;
+			}
+		}
+	}
+	for (int j = 0; j < edges.size(); j++) {
+		s = edges[j].s;
+		e = edges[j].e;
+		t = edges[j].t;
+		if (dist[e] > dist[s] + t) {
+			return true;
+		}
+	}
 
-    cout << "NO\n";
-
+	return false;
 }
 
+int main()
+{
+	cin.tie(NULL); cout.tie(NULL); ios_base::sync_with_stdio(false);
 
-int main() {
+	int TC;
+	cin >> TC;
 
-    int tc; cin >> tc;
+	int s, e, t;
+	while (TC > 0) {
+		cin >> n >> m >> w;
 
-    while (tc--) {
-        v.clear();
-        int n, m, w; cin >> n >> m >> w;
-        for (int i = 1; i <= n; i++) dist[i] = 987654321;
+		vector<edge> edges;
 
-        for (int i = 0; i < m; i++) {
-            int from, to, cost; cin >> from >> to >> cost;
-            v.push_back({ {from,to},cost });
-            v.push_back({ {to,from},cost });
-        }
-        for (int i = 0; i < w; i++) {
+		for (int i = 0; i < m; i++) {
+			cin >> s >> e >> t;
+			edges.push_back({ s,e,t });
+			edges.push_back({ e,s,t });
+		}
+		for (int i = 0; i < w; i++) {
+			cin >> s >> e >> t;
+			edges.push_back({ s,e,-t });
+		}
 
-            int from, to, cost; cin >> from >> to >> cost;
-            v.push_back({ {from,to},-cost });
-        }
+		if (time_travel(n, edges)) cout << "YES\n";
+		else cout << "NO\n";
 
-        bellmanFord(n);
-    }
+		TC--;
+	}
 
-
-    return 0;
+	return 0;
 }
