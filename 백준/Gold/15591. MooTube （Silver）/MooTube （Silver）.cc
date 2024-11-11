@@ -9,11 +9,10 @@ int main() {
 
 	int N,Q;
 	cin >> N >> Q;
-	vector<pii> vs[5001];
+	vector<pii>* vs = (vector<pii> *) malloc(sizeof(vector<pii>)* (N + 1));
 	for (int i = 0; i < N-1; i++) {
 		int p, q, r;
 		cin >> p >> q >> r;
-
 		vs[p].push_back({ q,r });
 		vs[q].push_back({ p,r });
 	}
@@ -40,4 +39,5 @@ int main() {
 		}
 		cout << c << '\n';
 	}
+	free(vs);
 }
