@@ -45,15 +45,15 @@ int main() {
     {
         for (int idx = 0; idx < numCount - cnt; idx++)
         {
-            for (int i = 1, j = cnt; i <= cnt; i++, j--)
+            for (int i = 1; i <= cnt; i++)
             {
-                int opIdx = (idx + cnt - j) * 2 + 1;
+				int opIdx = (idx + i) * 2 - 1;
                 char op = s[opIdx];
                 int candidates[4] = {
-                    calculate(maxCache[idx][idx + cnt - j], maxCache[idx + i][idx + cnt], op), //idx에서 idx + cnt 까지 사이를 i/j로 조절
-                    calculate(maxCache[idx][idx + cnt - j], minCache[idx + i][idx + cnt], op),
-                    calculate(minCache[idx][idx + cnt - j], maxCache[idx + i][idx + cnt], op),
-                    calculate(minCache[idx][idx + cnt - j], minCache[idx + i][idx + cnt], op)
+                    calculate(maxCache[idx][idx + i - 1], maxCache[idx + i][idx + cnt], op), //idx에서 idx + cnt 까지 사이를 i로 조절
+                    calculate(maxCache[idx][idx + i - 1], minCache[idx + i][idx + cnt], op),
+                    calculate(minCache[idx][idx + i - 1], maxCache[idx + i][idx + cnt], op),
+                    calculate(minCache[idx][idx + i - 1], minCache[idx + i][idx + cnt], op)
                 };
                 sort(candidates, candidates + 4);
                 maxCache[idx][idx + cnt] = max(maxCache[idx][idx + cnt], candidates[3]);
