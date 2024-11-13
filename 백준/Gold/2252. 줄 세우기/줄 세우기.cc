@@ -13,9 +13,9 @@ int main() {
 
 	cin >> N >> M;
 	int a, b;
-	in = vector<int>(N + 1);
-	result = vector<int>(N + 1);
-	graph = vector<vector<int>>(N + 1, vector<int>());
+	in.assign(N + 1, 0);
+	result.assign(N + 1, 0);
+	graph.assign(N + 1, vector<int>(0, 0));
 	
 	for (int i = 0; i < M; i++) {
 		cin >> a >> b;
