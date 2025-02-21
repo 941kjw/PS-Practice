@@ -1,11 +1,9 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 
 public class Main {
-    
+
     static int radix;
     static int[] base = {2, 3, 5, 7};
     static int[] element = {1, 3, 7, 9};
@@ -28,7 +26,7 @@ public class Main {
 
     static void combination(int selectedIdx, int current) {
         if (selectedIdx == radix) {
-            builder.append(current).append('\n');
+            System.out.println(current);
             return;
         }
 
@@ -47,7 +45,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
+//        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
 
         init(reader);
 
@@ -55,7 +53,7 @@ public class Main {
             combination(1, base[idx]);
         }
 
-        writer.write(builder.toString());
-        writer.close();
+//        writer.write(builder.toString());
+//        writer.close();
     }
 }
