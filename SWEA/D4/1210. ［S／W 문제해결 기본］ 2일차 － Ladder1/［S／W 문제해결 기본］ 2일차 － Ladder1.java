@@ -1,4 +1,4 @@
-
+//package algorithm;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -82,8 +82,7 @@ public class Solution {
                     }
                 }
             }
-            int result = climb();
-            builder.append('#').append(testIdx).append(' ').append(result).append('\n');
+            builder.append('#').append(testIdx).append(' ').append(climb()).append('\n');
         }
         writer.write(builder.toString());
         reader.close();
