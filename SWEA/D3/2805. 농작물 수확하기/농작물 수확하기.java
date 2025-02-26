@@ -17,24 +17,24 @@ import java.io.InputStreamReader;
  */
 public class Solution {
 
-	static int[][] farm;
+	static int[][] farm = new int[49][49];
 	static StringBuilder builder = new StringBuilder();
+	static int length;
 
 	static void init(BufferedReader reader) throws IOException {
-		int length = Integer.parseInt(reader.readLine());
+		length = Integer.parseInt(reader.readLine());
 
-		farm = new int[length][length];
+		//		farm = new int[length][length];
 
 		for (int row = 0; row < length; row++) {
 			String line = reader.readLine();
-			for (int col = 0; col < farm.length; col++) {
+			for (int col = 0; col < length; col++) {
 				farm[row][col] = line.charAt(col) - '0';
 			}
 		}
 	}
 
 	static int harvest() {
-		int length = farm.length;
 		int sum = 0;
 		int amount = -1;
 		for (int row = 0; row < farm.length; row++) {
