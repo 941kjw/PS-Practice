@@ -20,14 +20,13 @@ public class Solution {
 	static StringBuilder builder = new StringBuilder();
 	static int min;
 	static int cutLine;
-	static int[] employees;
+	static int[] employees = new int[20];
 	static int employeeCount;
 
 	static void init(BufferedReader reader) throws IOException {
 		StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
 
 		employeeCount = Integer.parseInt(tokenizer.nextToken());
-		employees = new int[employeeCount];
 		min = Integer.MAX_VALUE;
 		cutLine = Integer.parseInt(tokenizer.nextToken());
 
