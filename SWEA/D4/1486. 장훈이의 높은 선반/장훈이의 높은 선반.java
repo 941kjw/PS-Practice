@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StreamTokenizer;
 import java.util.StringTokenizer;
 
 /**
@@ -23,16 +24,17 @@ public class Solution {
 	static int[] employees = new int[20];
 	static int employeeCount;
 
-	static void init(BufferedReader reader) throws IOException {
-		StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
-
-		employeeCount = Integer.parseInt(tokenizer.nextToken());
+	static void init(StreamTokenizer tokenizer) throws IOException {
+		tokenizer.nextToken();
+		employeeCount = (int) tokenizer.nval;
 		min = Integer.MAX_VALUE;
-		cutLine = Integer.parseInt(tokenizer.nextToken());
+		tokenizer.nextToken();
+		cutLine = (int) tokenizer.nval;
 
-		tokenizer = new StringTokenizer(reader.readLine());
+		
 		for (int idx = 0; idx < employeeCount; idx++) {
-			employees[idx] = Integer.parseInt(tokenizer.nextToken());
+			tokenizer.nextToken();
+			employees[idx] = (int) tokenizer.nval;
 		}
 	}
 
@@ -49,11 +51,13 @@ public class Solution {
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		StreamTokenizer tokenizer = new StreamTokenizer(reader);
 
-		int testCount = Integer.parseInt(reader.readLine());
+		tokenizer.nextToken();
+		int testCount = (int) tokenizer.nval;
 
 		for (int testNumber = 1; testNumber <= testCount; testNumber++) {
-			init(reader);
+			init(tokenizer);
 			buildTower(0, 0);
 			builder.append('#').append(testNumber).append(' ').append(min).append('\n');
 		}
