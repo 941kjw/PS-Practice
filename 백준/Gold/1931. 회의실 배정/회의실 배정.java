@@ -1,9 +1,17 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StreamTokenizer;
 import java.util.Arrays;
-import java.util.StringTokenizer;
 
+/**
+ * 한 개의 회의실에서 최대한 많은 회의를 진행할 때,그 개수를 찾자.
+ * 
+ * 1.입력을 통한 초기화
+ * 2.
+ * 
+ *
+ */
 public class Main {
 
 	static Meeting[] queue;
@@ -37,15 +45,16 @@ public class Main {
 
 	}
 
-	static void init(BufferedReader reader) throws IOException {
-		int meetingCount = Integer.parseInt(reader.readLine());
+	static void init(StreamTokenizer tokenizer) throws IOException {
+		tokenizer.nextToken();
+		int meetingCount = (int) tokenizer.nval;
 		queue = new Meeting[meetingCount];
-		StringTokenizer tokenizer;
 
 		for (int idx = 0; idx < queue.length; idx++) {
-			tokenizer = new StringTokenizer(reader.readLine());
-			int startTime = Integer.parseInt(tokenizer.nextToken());
-			int endTime = Integer.parseInt(tokenizer.nextToken());
+			tokenizer.nextToken();
+			int startTime = (int) tokenizer.nval;
+			tokenizer.nextToken();
+			int endTime = (int) tokenizer.nval;
 
 			queue[idx] = new Meeting(startTime, endTime);
 		}
@@ -69,8 +78,8 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-		init(reader);
+		StreamTokenizer tokenizer = new StreamTokenizer(reader);
+		init(tokenizer);
 
 		System.out.println(find());
 	}
