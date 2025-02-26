@@ -1,7 +1,21 @@
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StreamTokenizer;
+import java.util.StringTokenizer;
 
+/**
+ * 배열을 반시계 방향으로 회전시킨다. 안쪽에 있는 것도!
+ * 
+ * !! 주의 !!
+ * 돌리는 방향의 역방향으로 할당해야 잘 된다.
+ * 순방향으로 하면 이전 값이 계속 따라서 흘러내려온다.
+ * 첫번째 칸의 값을 저장해 두었다가 회전 시킨 후 할당시키자.
+ * 
+ * 1.입력 초기화
+ * 2.
+ * 
+ *
+ */
 public class Main {
 
 	static int[] dy = { 0, 1, 0, -1 };
@@ -10,21 +24,18 @@ public class Main {
 	static int[][] array;
 	static short rotateCount;
 
-	static void init(StreamTokenizer tokenizer) throws IOException {
-		tokenizer.nextToken();
-		int rowAmount = (int) tokenizer.nval;
-		tokenizer.nextToken();
-		int colAmount = (int) tokenizer.nval;
-
-		tokenizer.nextToken();
-		rotateCount = (short) tokenizer.nval;
+	static void init(BufferedReader reader) throws IOException {
+		StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+		int rowAmount = Integer.parseInt(tokenizer.nextToken());
+		int colAmount = Integer.parseInt(tokenizer.nextToken());
+		rotateCount = Short.parseShort(tokenizer.nextToken());
 
 		array = new int[rowAmount][colAmount];
 
 		for (int row = 0; row < rowAmount; row++) {
+			tokenizer = new StringTokenizer(reader.readLine());
 			for (int col = 0; col < colAmount; col++) {
-				tokenizer.nextToken();
-				array[row][col] = (int) tokenizer.nval;
+				array[row][col] = Integer.parseInt(tokenizer.nextToken());
 			}
 		}
 	}
@@ -61,10 +72,9 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException {
-		InputStreamReader reader = new InputStreamReader(System.in);
-		StreamTokenizer tokenizer = new StreamTokenizer(reader);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-		init(tokenizer);
+		init(reader);
 
 		while (rotateCount-- > 0) {
 			rotate();
