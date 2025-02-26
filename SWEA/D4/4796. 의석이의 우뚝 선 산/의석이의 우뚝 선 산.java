@@ -1,6 +1,4 @@
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StreamTokenizer;
+import java.util.Scanner;
 
 /**
  * 
@@ -28,13 +26,11 @@ public class Solution {
 	static int length;
 	static StringBuilder builder = new StringBuilder();
 
-	static void init(StreamTokenizer tokenizer) throws IOException {
-		tokenizer.nextToken();
-		length = (int) tokenizer.nval;
+	static void init(Scanner scanner) {
+		length = scanner.nextInt();
 
 		for (int idx = 0; idx < length; idx++) {
-			tokenizer.nextToken();
-			mountains[idx] = (int) tokenizer.nval;
+			mountains[idx] = scanner.nextInt();
 		}
 
 	}
@@ -64,16 +60,13 @@ public class Solution {
 		return sum;
 	}
 
-	public static void main(String[] args) throws IOException {
-		InputStreamReader reader = new InputStreamReader(System.in);
-		StreamTokenizer tokenizer = new StreamTokenizer(reader);
-
-		tokenizer.nextToken();
-		int testCount = (int) tokenizer.nval;
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		int testCount = scanner.nextInt();
 
 		for (int testNumber = 1; testNumber <= testCount; testNumber++) {
 
-			init(tokenizer);
+			init(scanner);
 			builder.append('#').append(testNumber).append(' ').append(terrainRecon()).append('\n');
 		}
 
