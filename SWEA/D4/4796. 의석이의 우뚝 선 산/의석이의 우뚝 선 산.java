@@ -1,4 +1,7 @@
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StreamTokenizer;
 
 /**
  * 
@@ -26,11 +29,13 @@ public class Solution {
 	static int length;
 	static StringBuilder builder = new StringBuilder();
 
-	static void init(Scanner scanner) {
-		length = scanner.nextInt();
+	static void init(StreamTokenizer tokenizer) throws IOException {
+		tokenizer.nextToken();
+		length = (int) tokenizer.nval;
 
 		for (int idx = 0; idx < length; idx++) {
-			mountains[idx] = scanner.nextInt();
+			tokenizer.nextToken();
+			mountains[idx] = (int) tokenizer.nval;
 		}
 
 	}
@@ -38,35 +43,42 @@ public class Solution {
 	static int terrainRecon() {
 		int increase = 0;
 		int decrease = 0;
+
+		boolean peakFlag = false;
 		int sum = 0;
 		for (int idx = 0; idx < length - 1; idx++) {
-			int prev = mountains[idx];
-			int next = mountains[idx + 1];
 
-			if (prev < next) {
-				if (decrease == 0)
-					increase++;
-				else {
-					sum += (increase * decrease);
+			if (!peakFlag) {
+				if (mountains[idx] < mountains[idx + 1]) {
+					peakFlag = true;
+					sum += increase * decrease;
 					increase = 1;
 					decrease = 0;
+				} else {
+					decrease++;
 				}
 			} else {
-				if (increase != 0)
+				if (mountains[idx] > mountains[idx + 1]) {
+					peakFlag = false;
 					decrease++;
+				} else {
+					increase++;
+				}
 			}
 		}
 		sum += (increase * decrease);
 		return sum;
 	}
 
-	public static void main(String[] args) {
-		Scanner scanner = new Scanner(System.in);
-		int testCount = scanner.nextInt();
+	public static void main(String[] args) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		StreamTokenizer tokenizer = new StreamTokenizer(reader);
+		tokenizer.nextToken();
+		int testCount = (int) tokenizer.nval;
 
 		for (int testNumber = 1; testNumber <= testCount; testNumber++) {
 
-			init(scanner);
+			init(tokenizer);
 			builder.append('#').append(testNumber).append(' ').append(terrainRecon()).append('\n');
 		}
 
