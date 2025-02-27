@@ -3,6 +3,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
+/**
+ * 입력받은 각 팀의 승/무/패 수를 이용해 실제 가능한 경우인지 시뮬레이션하자.
+ * 총 6개의 팀이 있고, 리그전으로 각자 5회씩 경기를 치룬다.
+ * 따라서 총 경기 수는 30회여야 한다.
+ */
 public class Main {
     static int[][] score = new int[6][3];
 
@@ -21,7 +26,7 @@ public class Main {
             }
         }
 
-        if (matchCountSum > 30) {
+        if (matchCountSum != 30) {
             isInvalidInput = true;
         }
     }
