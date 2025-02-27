@@ -4,10 +4,6 @@ import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
 public class Main {
-
-    static int[] home = {0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4};
-    static int[] away = {1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5, 4, 5, 5};
-
     static int[][] score = new int[6][3];
 
     static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -30,39 +26,43 @@ public class Main {
         }
     }
 
-    static boolean validate(int gameIdx) {
-        if (gameIdx == 15) {
+    static boolean validate(int teamNumber, int opponentNumber) {
+        if (teamNumber == 5) {
             return true;
         }
 
-        if (score[home[gameIdx]][0] > 0 && score[away[gameIdx]][2] > 0) {
-            score[home[gameIdx]][0]--;
-            score[away[gameIdx]][2]--;
-            if (validate(gameIdx + 1)) {
-                return true;
-            }
-            score[home[gameIdx]][0]++;
-            score[away[gameIdx]][2]++;
+        if (opponentNumber == 6) {
+            return validate(teamNumber + 1, teamNumber + 2);
         }
 
-        if (score[home[gameIdx]][2] > 0 && score[away[gameIdx]][0] > 0) {
-            score[home[gameIdx]][2]--;
-            score[away[gameIdx]][0]--;
-            if (validate(gameIdx + 1)) {
+        if (score[teamNumber][0] > 0 && score[opponentNumber][2] > 0) {
+            score[teamNumber][0]--;
+            score[opponentNumber][2]--;
+            if (validate(teamNumber, opponentNumber + 1)) {
                 return true;
             }
-            score[home[gameIdx]][2]++;
-            score[away[gameIdx]][0]++;
+            score[teamNumber][0]++;
+            score[opponentNumber][2]++;
         }
 
-        if (score[home[gameIdx]][1] > 0 && score[away[gameIdx]][1] > 0) {
-            score[home[gameIdx]][1]--;
-            score[away[gameIdx]][1]--;
-            if (validate(gameIdx + 1)) {
+        if (score[teamNumber][2] > 0 && score[opponentNumber][0] > 0) {
+            score[teamNumber][2]--;
+            score[opponentNumber][0]--;
+            if (validate(teamNumber, opponentNumber + 1)) {
                 return true;
             }
-            score[home[gameIdx]][1]++;
-            score[away[gameIdx]][1]++;
+            score[teamNumber][2]++;
+            score[opponentNumber][0]++;
+        }
+
+        if (score[teamNumber][1] > 0 && score[opponentNumber][1] > 0) {
+            score[teamNumber][1]--;
+            score[opponentNumber][1]--;
+            if (validate(teamNumber, opponentNumber + 1)) {
+                return true;
+            }
+            score[teamNumber][1]++;
+            score[opponentNumber][1]++;
         }
 
         return false;
@@ -76,7 +76,7 @@ public class Main {
             if (isInvalidInput) {
                 builder.append(0).append(' ');
             } else {
-                builder.append(validate(0) ? 1 : 0).append(' ');
+                builder.append(validate(0, 1) ? 1 : 0).append(' ');
             }
         }
         System.out.println(builder);
