@@ -4,17 +4,18 @@ import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
 public class Main {
-
-    static Egg[] eggs = new Egg[8];
-    static int eggCount;
+    static short[] weightInfo = new short[8];
+    static short[] durabilityInfo = new short[8];
+    static short eggCount;
     static int max = 0;
     static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     static StreamTokenizer tokenizer = new StreamTokenizer(reader);
 
     static void init() throws IOException {
-        eggCount = read();
+        eggCount = readShort();
         for (int idx = 0; idx < eggCount; idx++) {
-            eggs[idx] = new Egg(read(), read());
+            durabilityInfo[idx] = readShort();
+            weightInfo[idx] = readShort();
         }
     }
 
@@ -22,7 +23,7 @@ public class Main {
         if (eggIdx == eggCount) {
             int brokenEggCount = 0;
             for (int idx = 0; idx < eggCount; idx++) {
-                if (eggs[idx].isBroken()) {
+                if (durabilityInfo[idx] <= 0) {
                     brokenEggCount++;
                 }
             }
@@ -30,20 +31,22 @@ public class Main {
             return;
         }
 
-        if (eggs[eggIdx].isBroken()) {
+        if (durabilityInfo[eggIdx] <= 0) {
             breakEggsWith(eggIdx + 1);
             return;
         }
 
         boolean strokeSomething = false;
         for (int idx = 0; idx < eggCount; idx++) {
-            if (eggIdx != idx && !eggs[idx].isBroken()) {
-                eggs[idx].durability -= eggs[eggIdx].weight;
-                eggs[eggIdx].durability -= eggs[idx].weight;
+            if (eggIdx != idx && durabilityInfo[idx] > 0) {
+                durabilityInfo[idx] -= weightInfo[eggIdx];
+                durabilityInfo[eggIdx] -= weightInfo[idx];
+
                 strokeSomething = true;
                 breakEggsWith(eggIdx + 1);
-                eggs[idx].durability += eggs[eggIdx].weight;
-                eggs[eggIdx].durability += eggs[idx].weight;
+
+                durabilityInfo[idx] += weightInfo[eggIdx];
+                durabilityInfo[eggIdx] += weightInfo[idx];
             }
         }
 
@@ -59,31 +62,8 @@ public class Main {
         System.out.println(max);
     }
 
-    static int read() throws IOException {
+    static short readShort() throws IOException {
         tokenizer.nextToken();
-        return (int) tokenizer.nval;
-    }
-
-    private static class Egg {
-
-        int durability;
-        int weight;
-
-        public Egg(int durability, int weight) {
-            this.durability = durability;
-            this.weight = weight;
-        }
-
-        public boolean isBroken() {
-            return durability <= 0;
-        }
-
-        @Override
-        public String toString() {
-            return "Egg{" +
-                    "durability=" + durability +
-                    ", weight=" + weight +
-                    '}';
-        }
+        return (short) tokenizer.nval;
     }
 }
