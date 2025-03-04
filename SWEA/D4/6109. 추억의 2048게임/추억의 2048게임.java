@@ -3,6 +3,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
+/**
+ * 
+ * 2048 게임과 같이 특정 방향으로 숫자들을 이동시켜 합친다.
+ * 단!!! 연속적으로 합쳐지는 일은 없음 ! (ex. right 2222 -> 4400)
+ * 
+ * 1.입력을 통한 초기화. 이때 입력받은 command string을 direction의 index로 변환한다.
+ * 2.각 방향별 이동
+ * 		2-1.방향에 따라 각 행/열을 순회한다. 이때, 결과 보드에 쓸 index를 초기화한다.
+ * 		2-2.현재 칸이 0이라면 스킵.
+ * 		2-3.당길 방향의 반대 방향으로 0이 아닌 다음 원소를 찾는다.
+ * 		2-4.만약 같은 원소라면 현재 칸을 2배로 하고, 해당 칸을 0으로 바꾼다.
+ * 		2-5.현재 칸을 결과 보드에 기입한다.
+ * 3.결과 보드를 출력한다.
+ *
+ */
 public class Solution {
 
 	static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -68,8 +83,7 @@ public class Solution {
 						board[row][nextNonZeroFinder] = 0;
 					}
 
-					if (board[row][col] != 0)
-						resultBoard[row][resultColCounter++] = board[row][col];
+					resultBoard[row][resultColCounter++] = board[row][col];
 				}
 			}
 		}
@@ -93,8 +107,7 @@ public class Solution {
 						board[row][nextNonZeroFinder] = 0;
 					}
 
-					if (board[row][col] != 0)
-						resultBoard[row][resultColCounter--] = board[row][col];
+					resultBoard[row][resultColCounter--] = board[row][col];
 				}
 			}
 		}
@@ -116,8 +129,7 @@ public class Solution {
 						board[nextNonZeroFinder][col] = 0;
 					}
 
-					if (board[row][col] != 0)
-						resultBoard[resultRowCounter++][col] = board[row][col];
+					resultBoard[resultRowCounter++][col] = board[row][col];
 				}
 			}
 		}
@@ -139,8 +151,7 @@ public class Solution {
 						board[nextNonZeroFinder][col] = 0;
 					}
 
-					if (board[row][col] != 0)
-						resultBoard[resultRowCounter--][col] = board[row][col];
+					resultBoard[resultRowCounter--][col] = board[row][col];
 				}
 			}
 		}
