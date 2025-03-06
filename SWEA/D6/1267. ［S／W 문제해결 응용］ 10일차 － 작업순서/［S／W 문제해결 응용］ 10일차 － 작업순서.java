@@ -6,6 +6,18 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 간단한 위상 정렬 문제.
+ * 제일 먼저 실행할 수 있는 작업은 선행 요구 조건의 갯수가 0이다.
+ * 작업을 실행한 후, 후속 작업의 요구 갯수를 1 감소시켜줘야 한다.
+ * 
+ * 1.입력 초기화
+ * 2.작업 순서를 만드는 메소드 호출
+ * 		2-1. 모든 작업이 완료될 때까지 반복.
+ * 			2-1-a. 만약 선행 요구 조건이 없다면
+ * 				2-1-b.  
+ *
+ */
 public class Solution {
 
 	static int vertexCount;
@@ -52,7 +64,6 @@ public class Solution {
 					for (int adjacentVertex : edgeList.get(idx)) {
 						inflow[adjacentVertex]--;
 					}
-					continue;
 				}
 			}
 		}
