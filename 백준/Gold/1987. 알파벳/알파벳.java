@@ -6,6 +6,7 @@ import java.io.StreamTokenizer;
 public class Main {
 
 	static int[][] board;
+	static int[][] visitedMemo;
 	static int boardRow;
 	static int boardCol;
 	static int maxRouteLength;
@@ -18,6 +19,7 @@ public class Main {
 		boardCol = read(tokenizer);
 		maxRouteLength = -1;
 		board = new int[boardRow][boardCol];
+		visitedMemo = new int[boardRow][boardCol];
 
 		for (int row = 0; row < boardRow; row++) {
 			String line = readLine(tokenizer);
@@ -28,14 +30,15 @@ public class Main {
 	}
 
 	static void dfs(int row, int col, int count, int visited) {
+		visited |= (1 << board[row][col]);
 
-		if ((visited & (1 << board[row][col])) != 0) {
+		if (visitedMemo[row][col] == visited) {
 			return;
 		}
 
-		visited |= (1 << board[row][col]);
-
 		maxRouteLength = Math.max(count, maxRouteLength);
+
+		visitedMemo[row][col] = visited;
 
 		for (int dir = 0; dir < 4; dir++) {
 			int nrow = row + dy[dir];
