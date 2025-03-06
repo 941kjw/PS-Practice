@@ -1,64 +1,93 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.StringTokenizer;
-
+import java.io.StreamTokenizer;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Main {
 
-    static int[] dx = {1, -1, 0, 0};
-    static int[] dy = {0, 0, 1, -1};
-    static char[][] board;
-    static int[][] dp;
-    static int maxl = 0;
-    static int R, C;
+	static char[][] board;
+	static int boardRow;
+	static int boardCol;
+	static int maxRouteLength;
 
-    public static void dfs(int y, int x, int count, int visited) {
-        visited |= (1 << board[y][x]);
-        if (dp[y][x] == visited) {
-            return;
-        }
-        maxl = Math.max(maxl, count);
+	static int[] dx = { -1, 0, 1, 0 };
+	static int[] dy = { 0, -1, 0, 1 };
 
-        dp[y][x] = visited;
+	static void init(StreamTokenizer tokenizer) throws IOException {
+		boardRow = read(tokenizer);
+		boardCol = read(tokenizer);
+		maxRouteLength = 1;
+		board = new char[boardRow][boardCol];
 
-        for (int i = 0; i < 4; i++) {
-            int ny = y + dy[i];
-            int nx = x + dx[i];
-            if (nx < 0 || nx >= C || ny < 0 || ny >= R) {
-                continue;
-            }
-            if ((visited & (1 << board[ny][nx])) == 0) {
-                dfs(ny, nx, count + 1, visited);
-            }
-        }
+		for (int row = 0; row < boardRow; row++) {
+			String line = readLine(tokenizer);
+			for (int col = 0; col < boardCol; col++) {
+				board[row][col] = line.charAt(col);
+			}
+		}
+	}
 
-    }
+	static void findMaxRoute() {
+		dfs(new Pos(0, 0));
+	}
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+	static void dfs(Pos pos) {
+		pos.trace.add(board[pos.row][pos.col]);
+		int originRow = pos.row;
+		int originCol = pos.col;
 
-        R = Integer.parseInt(st.nextToken());
-        C = Integer.parseInt(st.nextToken());
-        board = new char[R][C];
-        dp = new int[R][C];
+		maxRouteLength = Math.max(maxRouteLength, pos.trace.size());
 
-        for (int i = 0; i < R; i++) {
-            st = new StringTokenizer(br.readLine());
-            String s = st.nextToken();
-            for (int j = 0; j < C; j++) {
-                board[i][j] = s.charAt(j);
-            }
-        }
-        dfs(0, 0, 1, 0);
-        bw.write(String.valueOf(maxl));
-        bw.flush();
+		for (int dir = 0; dir < 4; dir++) {
+			int nrow = pos.row + dy[dir];
+			int ncol = pos.col + dx[dir];
 
-        br.close();
-        bw.close();
-    }
+			if (nrow < 0 || nrow >= boardRow || ncol < 0 || ncol >= boardCol || pos.trace.contains(board[nrow][ncol]))
+				continue;
+
+			pos.trace.remove(board[nrow][ncol]);
+			pos.row = nrow;
+			pos.col = ncol;
+
+			dfs(pos);
+
+			pos.trace.remove(board[nrow][ncol]);
+			pos.row = originRow;
+			pos.col = originCol;
+		}
+	}
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		StreamTokenizer tokenizer = new StreamTokenizer(reader);
+
+		init(tokenizer);
+		findMaxRoute();
+
+		System.out.println(maxRouteLength);
+	}
+
+	static int read(StreamTokenizer tokenizer) throws IOException {
+		tokenizer.nextToken();
+		return (int) tokenizer.nval;
+	}
+
+	static String readLine(StreamTokenizer tokenizer) throws IOException {
+		tokenizer.nextToken();
+		return tokenizer.sval;
+	}
+
+	static class Pos {
+		int row, col;
+		Set <Character> trace;
+
+		public Pos(int row, int col) {
+			this.row = row;
+			this.col = col;
+			this.trace = new HashSet <>();
+		}
+	}
+
 }
