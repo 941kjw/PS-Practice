@@ -2,9 +2,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class Main {
 
@@ -34,18 +36,22 @@ public class Main {
 	}
 
 	static void makeLine(StringBuilder builder) {
-		int count = 0;
-		while (count < studentCount) {
-			for (int idx = 0; idx < inflows.length; idx++) {
-				if (inflows[idx] == 0) {
-					inflows[idx]--;
-					builder.append(idx + 1).append(' ');
-					count++;
-					for (int comparedStudent : edges.get(idx)) {
-						inflows[comparedStudent]--;
-					}
-					continue;
-				}
+
+		Queue <Integer> queue = new ArrayDeque <>();
+
+		for (int idx = 0; idx < inflows.length; idx++) {
+			if (inflows[idx] == 0)
+				queue.add(idx);
+		}
+
+		while (!queue.isEmpty()) {
+			int current = queue.poll();
+
+			builder.append(current + 1).append(' ');
+
+			for (int other : edges.get(current)) {
+				if (--inflows[other] == 0)
+					queue.add(other);
 			}
 		}
 	}
