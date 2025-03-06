@@ -5,6 +5,20 @@ import java.io.StreamTokenizer;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+/**
+ * 치즈를 녹이는 시뮬레이션을 한다.
+ * bfs로 모든 칸을 방문하고, 1일 경우, 치즈를 지우고 큐에 넣지는 않는다.
+ * 
+ * 1.입력 초기화
+ * 2.시간 시뮬레이션
+ * 		2-1. BFS를 이용해 겉면만 녹인다.
+ * 		2-2. 방문처리한 구역을 초기화.
+ * 		2-3. 남아있는 치즈의 갯수를 세고, 0개가 아니라면 최솟값을 갱신.
+ * 		2-4. 남아있는 치즈가 있다면, 반복.
+ * 3.전부 녹는데 걸린 시간과, 전부 녹기 1시간 전의 치즈 갯수 출력.
+ * 
+ *
+ */
 public class Main {
 
 	static int[][] cheese;
@@ -91,15 +105,16 @@ public class Main {
 
 	static void simulate() {
 		Queue <Pos> queue = new ArrayDeque <>();
-		while (checkRemaining()) {
+		while (true) {
 			meltCheese(0, 0, queue);
 
 			int count = cleanUpAndCountCheese();
-
+			time++;
 			if (count != 0) {
 				minRemaining = Math.min(minRemaining, count);
+			} else {
+				break;
 			}
-			time++;
 		}
 	}
 
