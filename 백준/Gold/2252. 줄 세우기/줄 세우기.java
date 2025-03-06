@@ -44,6 +44,7 @@ public class Main {
 					for (int comparedStudent : edges.get(idx)) {
 						inflows[comparedStudent]--;
 					}
+					continue;
 				}
 			}
 		}
