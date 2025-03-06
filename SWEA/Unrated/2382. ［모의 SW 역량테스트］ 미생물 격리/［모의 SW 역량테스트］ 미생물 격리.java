@@ -2,8 +2,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Solution {
 
@@ -12,7 +10,7 @@ public class Solution {
     static int groupCount;
 
     static int[][] microOrganismMap;
-    static List<MicroOrganism> microOrganisms;
+    static MicroOrganism[] microOrganisms;
     static int microOrganismSum;
 
     static int[] dx = {0, 0, -1, 1};
@@ -39,17 +37,17 @@ public class Solution {
         length = read(tokenizer);
         targetTime = read(tokenizer);
         groupCount = read(tokenizer);
-        microOrganisms = new ArrayList<>();
+        microOrganisms = new MicroOrganism[groupCount];
 
         microOrganismMap = new int[length][length];
         microOrganismSum = 0;
 
-        for (int idx = 1; idx <= groupCount; idx++) {
+        for (int idx = 0; idx < groupCount; idx++) {
             int row = read(tokenizer);
             int col = read(tokenizer);
             int amount = read(tokenizer);
             int direction = read(tokenizer) - 1;
-            microOrganisms.add(new MicroOrganism(row, col, amount, direction));
+            microOrganisms[idx] = new MicroOrganism(row, col, amount, direction);
             microOrganismMap[row][col] = idx;
         }
     }
@@ -61,15 +59,15 @@ public class Solution {
                 microOrganism.update();
             }
 
-            for (int idx = 0; idx < microOrganisms.size(); idx++) {
-                MicroOrganism current = microOrganisms.get(idx);
+            for (int idx = 0; idx < microOrganisms.length; idx++) {
+                MicroOrganism current = microOrganisms[idx];
                 if (current.isDead()) {
                     continue;
                 }
 
                 int max = current.amount;
-                for (int otherIdx = idx + 1; otherIdx < microOrganisms.size(); otherIdx++) {
-                    MicroOrganism other = microOrganisms.get(otherIdx);
+                for (int otherIdx = idx + 1; otherIdx < microOrganisms.length; otherIdx++) {
+                    MicroOrganism other = microOrganisms[otherIdx];
                     if (other.isDead()) {
                         continue;
                     }
@@ -85,8 +83,6 @@ public class Solution {
                     }
                 }
             }
-
-            microOrganisms.removeIf(MicroOrganism::isDead);
         }
 
         for (MicroOrganism microOrganism : microOrganisms) {
