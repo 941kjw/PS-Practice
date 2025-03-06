@@ -18,14 +18,14 @@ import java.io.StreamTokenizer;
 public class Solution {
 
     static int length;
-    static int[][] dessertMap;
+    static byte[][] dessertMap;
 
     //우하 -> 좌하 -> 좌상 -> 우상의 다이아몬드 모양
     static int[] dx = {1, -1, -1, 1};
     static int[] dy = {1, 1, -1, -1};
 
     static boolean[][] visited;
-    static boolean[] dessertKindSet;
+    static int[] dessertKindSet;
 
     static int maxCount;
 
@@ -38,6 +38,7 @@ public class Solution {
 
         for (int testNumber = 1; testNumber <= testCount; testNumber++) {
             init(tokenizer);
+
             searchLongestRoute();
             builder.append('#').append(testNumber).append(' ').append(maxCount).append('\n');
         }
@@ -50,9 +51,10 @@ public class Solution {
         for (int row = 0; row < length - 2; row++) {
             for (int col = 1; col < length - 1; col++) {
                 visited = new boolean[length][length];
-                dessertKindSet = new boolean[101];
+                dessertKindSet = new int[4];
+
                 visited[row][col] = true;
-                dessertKindSet[dessertMap[row][col]] = true;
+                markAs(dessertMap[row][col], true);
                 dfs(1, row, col, row, col, 0);
             }
         }
@@ -72,21 +74,38 @@ public class Solution {
                     return;
                 }
 
-                if (!visited[nRow][nCol] && !dessertKindSet[dessertMap[nRow][nCol]]) {
+                if (!visited[nRow][nCol] && !getState(dessertMap[nRow][nCol])) {
                     visited[nRow][nCol] = true;
-                    dessertKindSet[dessertMap[nRow][nCol]] = true;
+                    markAs(dessertMap[nRow][nCol], true);
                     dfs(count + 1, nRow, nCol, startRow, startCol, dir);
                     visited[nRow][nCol] = false;
-                    dessertKindSet[dessertMap[nRow][nCol]] = false;
+                    markAs(dessertMap[nRow][nCol], false);
                 }
             }
         }
     }
 
+    static void markAs(int number, boolean state) {
+        int row = number / 30;
+        int col = number % 30;
+
+        if (state) {
+            dessertKindSet[row] |= (1 << col);
+        } else {
+            dessertKindSet[row] &= ~(1 << col);
+        }
+    }
+
+    static boolean getState(int number) {
+        int row = number / 30;
+        int col = number % 30;
+
+        return ((dessertKindSet[row] & (1 << col)) != 0);
+    }
 
     static void init(StreamTokenizer tokenizer) throws IOException {
         length = read(tokenizer);
-        dessertMap = new int[length][length];
+        dessertMap = new byte[length][length];
         maxCount = -1;
 
         for (int row = 0; row < length; row++) {
@@ -97,8 +116,8 @@ public class Solution {
     }
 
 
-    static int read(StreamTokenizer tokenizer) throws IOException {
+    static byte read(StreamTokenizer tokenizer) throws IOException {
         tokenizer.nextToken();
-        return (int) tokenizer.nval;
+        return (byte) tokenizer.nval;
     }
 }
