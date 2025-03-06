@@ -9,8 +9,8 @@ public class Solution {
     static int targetTime;
     static int groupCount;
 
-    static int[][] microOrganismMap;
-    static MicroOrganism[] microOrganisms;
+    static MicroOrganism head;
+    static MicroOrganism tail;
     static int microOrganismSum;
 
     static int[] dx = {0, 0, -1, 1};
@@ -36,8 +36,8 @@ public class Solution {
         length = read(tokenizer);
         targetTime = read(tokenizer);
         groupCount = read(tokenizer);
-        microOrganisms = new MicroOrganism[groupCount];
-
+        head = null;
+        tail = null;
         microOrganismSum = 0;
 
         for (int idx = 0; idx < groupCount; ++idx) {
@@ -45,27 +45,39 @@ public class Solution {
             int col = read(tokenizer);
             int amount = read(tokenizer);
             int direction = read(tokenizer) - 1;
-            microOrganisms[idx] = new MicroOrganism(row, col, amount, direction);
+            if (head == null) {
+                head = new MicroOrganism(row, col, amount, direction);
+                tail = head;
+            } else {
+                tail.attach(new MicroOrganism(row, col, amount, direction));
+                tail = tail.next;
+            }
         }
     }
 
     static void simulate() {
         for (int time = 0; time < targetTime; ++time) {
+            MicroOrganism current = head;
 
-            for (MicroOrganism microOrganism : microOrganisms) {
-                microOrganism.update();
+            while (current != null) {
+                current.update();
+                current = current.next;
             }
 
-            for (int idx = 0; idx < microOrganisms.length; ++idx) {
-                MicroOrganism current = microOrganisms[idx];
+            current = head;
+            while (current != null) {
                 if (current.isDead()) {
+                    current = current.next;
                     continue;
                 }
 
                 int max = current.amount;
-                for (int otherIdx = idx + 1; otherIdx < microOrganisms.length; otherIdx++) {
-                    MicroOrganism other = microOrganisms[otherIdx];
+
+                MicroOrganism other = current.next;
+
+                while (other != null) {
                     if (other.isDead()) {
+                        other = other.next;
                         continue;
                     }
 
@@ -78,12 +90,25 @@ public class Solution {
 
                         other.amount = 0;
                     }
+                    other = other.next;
                 }
+                current = current.next;
+            }
+
+            current = head;
+            while (current != null) {
+                MicroOrganism next = current.next;
+                if (current.isDead()) {
+                    current.removeSelf();
+                }
+                current = next;
             }
         }
 
-        for (MicroOrganism microOrganism : microOrganisms) {
-            microOrganismSum += microOrganism.amount;
+        MicroOrganism iterator = head;
+        while (iterator != null) {
+            microOrganismSum += iterator.amount;
+            iterator = iterator.next;
         }
     }
 
@@ -97,11 +122,21 @@ public class Solution {
         int amount;
         int direction;
 
+        MicroOrganism before;
+        MicroOrganism next;
+
         public MicroOrganism(int row, int col, int amount, int direction) {
             this.row = row;
             this.col = col;
             this.amount = amount;
             this.direction = direction;
+            this.before = null;
+            this.next = null;
+        }
+
+        void attach(MicroOrganism next) {
+            this.next = next;
+            next.before = this;
         }
 
         void update() {
@@ -124,6 +159,22 @@ public class Solution {
 
         boolean isDead() {
             return this.amount == 0;
+        }
+
+        void removeSelf() {
+            if (this != head) {
+                this.before.next = this.next;
+            } else {
+                this.next.before = null;
+                head = next;
+            }
+
+            if (this != tail) {
+                this.next.before = this.before;
+            } else {
+                this.before.next = null;
+                tail = this.before;
+            }
         }
     }
 }
