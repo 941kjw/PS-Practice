@@ -20,7 +20,6 @@ public class Solution {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         StreamTokenizer tokenizer = new StreamTokenizer(reader);
         StringBuilder builder = new StringBuilder();
-
         int testCount = read(tokenizer);
 
         for (int testNumber = 1; testNumber <= testCount; testNumber++) {
@@ -39,27 +38,25 @@ public class Solution {
         groupCount = read(tokenizer);
         microOrganisms = new MicroOrganism[groupCount];
 
-        microOrganismMap = new int[length][length];
         microOrganismSum = 0;
 
-        for (int idx = 0; idx < groupCount; idx++) {
+        for (int idx = 0; idx < groupCount; ++idx) {
             int row = read(tokenizer);
             int col = read(tokenizer);
             int amount = read(tokenizer);
             int direction = read(tokenizer) - 1;
             microOrganisms[idx] = new MicroOrganism(row, col, amount, direction);
-            microOrganismMap[row][col] = idx;
         }
     }
 
     static void simulate() {
-        for (int time = 0; time < targetTime; time++) {
+        for (int time = 0; time < targetTime; ++time) {
 
             for (MicroOrganism microOrganism : microOrganisms) {
                 microOrganism.update();
             }
 
-            for (int idx = 0; idx < microOrganisms.length; idx++) {
+            for (int idx = 0; idx < microOrganisms.length; ++idx) {
                 MicroOrganism current = microOrganisms[idx];
                 if (current.isDead()) {
                     continue;
@@ -108,7 +105,7 @@ public class Solution {
         }
 
         void update() {
-            if (this.amount == 0) {
+            if (isDead()) {
                 return;
             }
 
