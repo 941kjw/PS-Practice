@@ -2,9 +2,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * 간단한 위상 정렬 문제.
@@ -14,9 +16,16 @@ import java.util.List;
  * 1.입력 초기화
  * 2.작업 순서를 만드는 메소드 호출
  * 		2-1. 모든 작업이 완료될 때까지 반복.
- * 			2-1-a. 만약 선행 요구 조건이 없다면
- * 				2-1-b.  
- *
+ * 			2-1-a. 만약 선행 요구 조건이 없다면,
+ * 				2-1-a-ㄱ. 자기 자신의 선행 요구 조건을 1만큼 빼줌(재방문 방지)
+ * 				2-1-a-ㄴ. 작업 순서에 자기 자신을 기록.
+ * 				2-1-a-ㄷ. 후속 작업의 선행 작업 수를 1만큼 빼준다.
+ * 3. 완성한 작업 순서를 출력.
+ * 
+ * 모든 노드를 1회 탐색하고, 이때 간선을 전부 탐색하므로
+ * 
+ * O(V+E)?
+ * 
  */
 public class Solution {
 
@@ -24,7 +33,7 @@ public class Solution {
 	static int edgeCount;
 
 	static int[] inflow;
-	static int[] workOrder;
+	static StringBuilder builder;
 	static List <List <Integer>> edgeList;
 
 	static void init(StreamTokenizer tokenizer) throws IOException {
@@ -37,7 +46,6 @@ public class Solution {
 			edgeList.add(new LinkedList <>());
 		}
 
-		workOrder = new int[vertexCount];
 		inflow = new int[vertexCount];
 
 		for (int edgeNumber = 0; edgeNumber < edgeCount; edgeNumber++) {
@@ -54,16 +62,20 @@ public class Solution {
 	}
 
 	static void makeWorkOrder() {
-		int count = 0;
+		Queue <Integer> queue = new ArrayDeque <>();
 
-		while (count < vertexCount) {
-			for (int idx = 0; idx < vertexCount; idx++) {
-				if (inflow[idx] == 0) {
-					inflow[idx]--;
-					workOrder[count++] = idx + 1;
-					for (int adjacentVertex : edgeList.get(idx)) {
-						inflow[adjacentVertex]--;
-					}
+		for (int idx = 0; idx < inflow.length; idx++) {
+			if (inflow[idx] == 0)
+				queue.add(idx);
+		}
+
+		while (!queue.isEmpty()) {
+			int currentIdx = queue.poll();
+			builder.append(currentIdx + 1).append(' ');
+
+			for (int next : edgeList.get(currentIdx)) {
+				if (--inflow[next] == 0) {
+					queue.add(next);
 				}
 			}
 		}
@@ -72,16 +84,12 @@ public class Solution {
 	public static void main(String[] args) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		StreamTokenizer tokenizer = new StreamTokenizer(reader);
-		StringBuilder builder = new StringBuilder();
+		builder = new StringBuilder();
 		for (int testNumber = 1; testNumber <= 10; testNumber++) {
 			builder.append('#').append(testNumber).append(' ');
 			init(tokenizer);
 
 			makeWorkOrder();
-
-			for (int idx = 0; idx < vertexCount; idx++) {
-				builder.append(workOrder[idx]).append(' ');
-			}
 			builder.append('\n');
 		}
 
