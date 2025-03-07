@@ -66,7 +66,7 @@ public class Solution {
 
 			checkCollision();
 
-			removeDead();
+			//removeDead();
 		}
 		getSum();
 	}
@@ -76,8 +76,13 @@ public class Solution {
 
 		while (current != null) {
 			current.update();
-			countMap[current.row][current.col]++;
-			current = current.next;
+
+			if (current.isDead()) {
+				current = current.quitSelf();
+			} else {
+				countMap[current.row][current.col]++;
+				current = current.next;
+			}
 		}
 	}
 
@@ -134,7 +139,11 @@ public class Solution {
 				}
 				other.amount = 0;
 			}
-			other = other.next;
+
+			if (other.isDead())
+				other = other.quitSelf();
+			else
+				other = other.next;
 		}
 	}
 
@@ -189,6 +198,11 @@ public class Solution {
 
 		int posHash() {
 			return this.row * 1000 + this.col;
+		}
+
+		MicroOrganism quitSelf() {
+			removeSelf();
+			return this.next;
 		}
 
 		void removeSelf() {
