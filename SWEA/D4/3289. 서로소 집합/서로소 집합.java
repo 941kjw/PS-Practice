@@ -31,14 +31,14 @@ public class Solution {
 		if (parentOfElement1 == parentOfElement2)
 			return;
 
-//		if (ranks[parentOfElement1] > ranks[parentOfElement2]) {
-//			parents[parentOfElement2] = parentOfElement1;
-//			return;
-//		}
-//
-//		if (ranks[parentOfElement1] == ranks[parentOfElement2]) {
-//			++ranks[parentOfElement2];
-//		}
+		if (ranks[parentOfElement1] > ranks[parentOfElement2]) {
+			parents[parentOfElement2] = parentOfElement1;
+			return;
+		}
+
+		if (ranks[parentOfElement1] == ranks[parentOfElement2]) {
+			++ranks[parentOfElement2];
+		}
 
 		parents[parentOfElement1] = parentOfElement2;
 
