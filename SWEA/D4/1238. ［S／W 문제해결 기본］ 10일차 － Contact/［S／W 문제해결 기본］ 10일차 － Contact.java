@@ -4,8 +4,10 @@ import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * 비상 연락망이 주어진다.단, 상호 연락이 가능한게 아니고 편도로만 가능하다.
@@ -25,7 +27,7 @@ public class Solution {
 
     private static int maxNumber;
 
-    private static boolean[][] phoneMap;
+    private static Set<Integer>[] phoneMap;
     private static boolean[] visited;
 
     private static void init(StreamTokenizer tokenizer) throws IOException {
@@ -33,14 +35,17 @@ public class Solution {
         starter = read(tokenizer);
         maxNumber = 0;
 
-        phoneMap = new boolean[101][101];
+        phoneMap = new Set[101];
         visited = new boolean[101];
 
         for (int idx = 0; idx < phoneLineCount / 2; idx++) {
             int element1 = read(tokenizer);
             int element2 = read(tokenizer);
 
-            phoneMap[element1][element2] = true;
+            if (phoneMap[element1] == null) {
+                phoneMap[element1] = new HashSet<>();
+            }
+            phoneMap[element1].add(element2);
         }
 
     }
@@ -62,7 +67,7 @@ public class Solution {
                 int cur = queue.poll();
 
                 for (int opponentNumber = 1; opponentNumber < 101; opponentNumber++) {
-                    if (phoneMap[cur][opponentNumber] && !visited[opponentNumber]) {
+                    if (phoneMap[cur] != null && phoneMap[cur].contains(opponentNumber) && !visited[opponentNumber]) {
                         queue.offer(opponentNumber);
                         visited[opponentNumber] = true;
                         max = Math.max(max, opponentNumber);
