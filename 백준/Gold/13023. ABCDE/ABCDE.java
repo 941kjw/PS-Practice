@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +10,6 @@ public class Main {
 
 	private static List<List<Integer>> relationList;
 	private static boolean[] visited;
-	private static int[] depthInfo;
 
 	private static int manCount;
 	private static int relationCount;
@@ -19,7 +17,6 @@ public class Main {
 	private static void init(StreamTokenizer tokenizer) throws IOException {
 		manCount = read(tokenizer);
 		relationCount = read(tokenizer);
-		depthInfo = new int[manCount];
 		visited = new boolean[manCount];
 		relationList = new ArrayList<>(manCount);
 
@@ -47,11 +44,12 @@ public class Main {
 
 	private static void searchForFive() {
 		for (int man = 0; man < manCount; man++) {
-			Arrays.fill(visited, false);
+			visited[man] = true;
 			if (dfs(man, 0)) {
 				System.out.println(1);
 				return;
 			}
+			visited[man] = false;
 		}
 		System.out.println(0);
 	}
@@ -66,7 +64,6 @@ public class Main {
 	private static boolean dfs(int number, int depth) {
 		if (depth == 4)
 			return true;
-		visited[number] = true;
 
 		boolean result = false;
 		for (Integer idx : relationList.get(number)) {
