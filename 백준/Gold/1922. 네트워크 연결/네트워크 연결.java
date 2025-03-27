@@ -63,7 +63,7 @@ public class Main {
 		if (fromParent == toParent)
 			return false;
 
-		parents[toParent] = fromParent;
+		parents[fromParent] = toParent;
 
 		return true;
 	}
