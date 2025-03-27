@@ -6,10 +6,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
+/**
+ * 모든 사람이 0번 계단을 사용한다 / 하지 않는다의 모든 조합을 생성한다.
+ *
+ */
 public class Solution {
 
     private static Stair[] stairs;
-    private static List<Pos> mans;
+    private static List<Man> mans;
     private static int minTime;
 
     private static void init(StreamTokenizer tokenizer) throws IOException {
@@ -23,7 +28,7 @@ public class Solution {
             for (int col = 0; col < roomSize; col++) {
                 int value = read(tokenizer);
                 if (value == 1) {
-                    mans.add(new Pos(row, col));
+                    mans.add(new Man(row, col));
                 }
 
                 if (value > 1) {
@@ -41,11 +46,14 @@ public class Solution {
             for (int radix = 0; radix < mans.size(); ++radix) {
                 int number = selected & (1 << radix);
 
-                Pos cur = mans.get(radix);
+                Man cur = mans.get(radix);
                 if (number == 0) {
-                    stair1User.add(new Man(cur.row, cur.col, getDistance(radix, 0)));
+                    cur.distance = getDistance(radix, 0);
+                    stair1User.add(cur);
                     continue;
                 }
+
+                cur.distance = getDistance(radix, 1);
                 stair2User.add(new Man(cur.row, cur.col, getDistance(radix, 1)));
             }
 
@@ -80,7 +88,7 @@ public class Solution {
 
         return time;
     }
-    
+
     private static int getDistance(int manIdx, int stairIdx) {
         return Math.abs(mans.get(manIdx).row - stairs[stairIdx].row) + Math.abs(
                 mans.get(manIdx).col - stairs[stairIdx].col);
@@ -106,12 +114,18 @@ public class Solution {
         System.out.println(builder);
     }
 
-    private static class Man extends Pos implements Comparable<Man> {
-        int distance;
+    private static class Man implements Comparable<Man> {
+        int row, col, distance;
 
         public Man(int row, int col, int distance) {
-            super(row, col);
+            this.row = row;
+            this.col = col;
             this.distance = distance;
+        }
+
+        public Man(int row, int col) {
+            this.row = row;
+            this.col = col;
         }
 
         @Override
@@ -120,11 +134,12 @@ public class Solution {
         }
     }
 
-    private static class Stair extends Pos {
-        int length;
+    private static class Stair {
+        int row, col, length;
 
         public Stair(int row, int col, int length) {
-            super(row, col);
+            this.row = row;
+            this.col = col;
             this.length = length;
         }
     }
