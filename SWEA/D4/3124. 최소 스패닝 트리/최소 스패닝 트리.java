@@ -22,7 +22,6 @@ public class Solution {
 	private static int edgeCount;
 
 	private static int[] parents;
-	private static int[] ranks;
 	private static long weightSum;
 
 	private static Edge[] edges;
@@ -33,7 +32,6 @@ public class Solution {
 		edgeCount = read(tokenizer);
 
 		parents = new int[vertexCount];
-		ranks = new int[vertexCount];
 		edges = new Edge[edgeCount];
 		weightSum = 0;
 
@@ -65,15 +63,7 @@ public class Solution {
 		if (fromParent == toParent)
 			return false;
 
-//		if (ranks[fromParent] > ranks[toParent]) {
-//			parents[toParent] = fromParent;
-//			return true;
-//		}
-//
-//		if (ranks[fromParent] == ranks[toParent])
-//			ranks[toParent]++;
-
-		parents[fromParent] = toParent;
+		parents[toParent] = fromParent;
 
 		return true;
 	}
