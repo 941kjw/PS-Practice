@@ -7,9 +7,8 @@ import java.util.List;
 
 public class Solution {
 
-    private static int[][] delta = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+    private static final int[][] delta = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
     private static int[][] map;
-    private static int[][] copiedMap;
     private static List<Pos> cores;
 
     private static int maxConnected;
@@ -18,7 +17,6 @@ public class Solution {
     private static void init(StreamTokenizer tokenizer) throws IOException {
         int mapSize = read(tokenizer);
         map = new int[mapSize][mapSize];
-        copiedMap = new int[mapSize][mapSize];
         cores = new ArrayList<>();
         maxConnected = Integer.MIN_VALUE;
         minLength = Integer.MAX_VALUE;
@@ -26,10 +24,11 @@ public class Solution {
         for (int row = 0; row < mapSize; ++row) {
             for (int col = 0; col < mapSize; ++col) {
                 int value = read(tokenizer);
-                map[row][col] = value;
-                copiedMap[row][col] = value;
-
-                if (row > 0 && row < mapSize - 1 && col > 0 && col < mapSize - 1 && value == 1) {
+                if (value == 1) {
+                    map[row][col] = value;
+                    if (row == 0 || row == mapSize - 1 || col == 0 || col == mapSize - 1) {
+                        continue;
+                    }
                     cores.add(new Pos(row, col));
                 }
             }
@@ -51,8 +50,8 @@ public class Solution {
             int row = cores.get(number).row;
             int col = cores.get(number).col;
 
-            if (probe(row, col, idx)) {
-                int placedLength = place(row, col, idx);
+            int placedLength = place(row, col, idx);
+            if (placedLength > 0) {
                 tryConnect(number + 1, coreCount + 1, length + placedLength);
                 clear(row, col, idx);
             } else {
@@ -61,40 +60,38 @@ public class Solution {
         }
     }
 
-    private static boolean probe(int row, int col, int direction) {
-        boolean isPlaceable = true;
-        int curRow = row + delta[direction][0];
-        int curCol = col + delta[direction][1];
-        while (curRow > -1 && curRow < copiedMap.length && curCol > -1 && curCol < copiedMap.length) {
-            if (copiedMap[curRow][curCol] != 0) {
-                isPlaceable = false;
-                break;
-            }
-            curRow += delta[direction][0];
-            curCol += delta[direction][1];
-        }
-        return isPlaceable;
-    }
-
     private static int place(int row, int col, int direction) {
         int lineLength = 0;
         int curRow = row + delta[direction][0];
         int curCol = col + delta[direction][1];
-        while (curRow > -1 && curRow < copiedMap.length && curCol > -1 && curCol < copiedMap.length) {
-            copiedMap[curRow][curCol] = 1;
+        while (curRow > -1 && curRow < map.length && curCol > -1 && curCol < map.length) {
+            if (map[curRow][curCol] == 1 || map[curRow][curCol] == 2) {
+                lineLength = 0;
+                break;
+            }
+            map[curRow][curCol] = 2;
             ++lineLength;
             curRow += delta[direction][0];
             curCol += delta[direction][1];
         }
 
+        if (lineLength == 0 && (curRow != row || curCol != col)) {
+            curRow -= delta[direction][0];
+            curCol -= delta[direction][1];
+            while (curRow != row || curCol != col) {
+                map[curRow][curCol] = 0;
+                curRow -= delta[direction][0];
+                curCol -= delta[direction][1];
+            }
+        }
         return lineLength;
     }
 
     private static void clear(int row, int col, int direction) {
         int curRow = row + delta[direction][0];
         int curCol = col + delta[direction][1];
-        while (curRow > -1 && curRow < copiedMap.length && curCol > -1 && curCol < copiedMap.length) {
-            copiedMap[curRow][curCol] = map[curRow][curCol];
+        while (curRow > -1 && curRow < map.length && curCol > -1 && curCol < map.length) {
+            map[curRow][curCol] = 0;
             curRow += delta[direction][0];
             curCol += delta[direction][1];
         }
@@ -108,9 +105,10 @@ public class Solution {
 
         for (int testNumber = 1; testNumber <= testCount; testNumber++) {
             init(tokenizer);
-
             tryConnect(0, 0, 0);
             builder.append('#').append(testNumber).append(' ').append(minLength).append('\n');
+
+
         }
         System.out.println(builder);
     }
