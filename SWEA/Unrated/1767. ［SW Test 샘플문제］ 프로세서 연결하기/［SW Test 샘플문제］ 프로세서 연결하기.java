@@ -54,10 +54,9 @@ public class Solution {
             if (placedLength > 0) {
                 tryConnect(number + 1, coreCount + 1, length + placedLength);
                 clear(row, col, idx);
-            } else {
-                tryConnect(number + 1, coreCount, length);
             }
         }
+        tryConnect(number + 1, coreCount, length);
     }
 
     private static int place(int row, int col, int direction) {
@@ -107,8 +106,6 @@ public class Solution {
             init(tokenizer);
             tryConnect(0, 0, 0);
             builder.append('#').append(testNumber).append(' ').append(minLength).append('\n');
-
-
         }
         System.out.println(builder);
     }
