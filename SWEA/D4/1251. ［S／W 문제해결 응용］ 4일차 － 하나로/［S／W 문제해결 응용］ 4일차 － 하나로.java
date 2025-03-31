@@ -76,7 +76,7 @@ public class Solution {
             int minIdx = -1;
             double min = Double.MAX_VALUE;
 
-            // 최소 간선 찾기 (비용이 가장 작은 정점 u)
+            // 최소 간선 찾기 (비용이 가장 작은 정점 idx)
             for (int subIdx = 0; subIdx < islandCount; subIdx++) {
                 if (!visited[subIdx] && minEdge[subIdx] < min) {
                     min = minEdge[subIdx];
@@ -84,6 +84,7 @@ public class Solution {
                 }
             }
 
+            //전부 방문했음
             if (minIdx == -1) {
                 break;
             }
@@ -91,6 +92,7 @@ public class Solution {
             visited[minIdx] = true;
             minTax += minEdge[minIdx];
 
+            //주변 거리 갱신
             for (Edge e : graph[minIdx]) {
                 if (!visited[e.to] && e.price < minEdge[e.to]) {
                     minEdge[e.to] = e.price;
