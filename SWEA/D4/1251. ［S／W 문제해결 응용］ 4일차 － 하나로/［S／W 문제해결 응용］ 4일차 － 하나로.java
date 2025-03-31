@@ -2,153 +2,142 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.PriorityQueue;
 
+/**
+ *
+ * 모든 섬을 잇되, 최소 비용으로 이어야 한다.
+ * 섬의 좌표만 주어지고, 간선은 주어지지 않으므로 모든 간선을 직접 만들어야 한다.
+ *
+ * 1.입력받은 섬들의 모든 간선을 생성
+ * 2.간선을 비용이 적은 순서대로 정렬한다.
+ * 3.union-find를 통해, 모든 간선을 순환하다가 선택한 간선 갯수가 섬 개수 -1이 되면 종료.
+ *
+ *
+ */
 public class Solution {
 
-	private static int islandCount;
+    private static int islandCount;
 
-	private static Island[] islands;
-	private static int[] parents;
-	private static int[] ranks;
-	private static double taxRate;
-	private static double minTax;
+    private static int[] islandX;
+    private static int[] islandY;
+    private static boolean[] visited;
+    private static double taxRate;
+    private static double minTax;
+    private static List<Edge>[] graph;
 
-	private static Edge[] edges;
+    private static void init(StreamTokenizer tokenizer) throws IOException {
 
-	private static void init(StreamTokenizer tokenizer) throws IOException {
+        islandCount = read(tokenizer);
 
-		islandCount = read(tokenizer);
+        visited = new boolean[islandCount];
+        islandX = new int[islandCount];
+        islandY = new int[islandCount];
+        graph = new List[islandCount];
 
-		parents = new int[islandCount];
-		ranks = new int[islandCount];
-		islands = new Island[islandCount];
-		edges = new Edge[islandCount * (islandCount - 1) / 2];
-		minTax = 0;
+        minTax = 0;
 
-		for (int id = 0; id < islandCount; id++) {
-			parents[id] = id;
-			islands[id] = new Island();
-			islands[id].x = read(tokenizer);
-		}
+        for (int id = 0; id < islandCount; id++) {
+            islandX[id] = read(tokenizer);
+        }
 
-		for (int id = 0; id < islandCount; id++) {
-			islands[id].y = read(tokenizer);
-		}
+        for (int id = 0; id < islandCount; id++) {
+            islandY[id] = read(tokenizer);
+        }
 
-		taxRate = readDouble(tokenizer);
+        taxRate = readDouble(tokenizer);
 
-		makeEdges();
+        makeEdges();
+    }
 
-		Arrays.sort(edges);
-	}
+    private static void makeEdges() {
+        for (int from = 0; from < islandCount; from++) {
+            for (int to = from + 1; to < islandCount; to++) {
+                double price = getDistance(from, to) * taxRate;
+                if (graph[from] == null) {
+                    graph[from] = new ArrayList<>();
+                }
+                graph[from].add(new Edge(to, price));
+                if (graph[to] == null) {
+                    graph[to] = new ArrayList<>();
+                }
+                graph[to].add(new Edge(from, price));
+            }
+        }
+    }
 
-	private static void makeEdges() {
-		int idx = 0;
+    private static void findMinCombination() {
+        PriorityQueue<Edge> priorityQueue = new PriorityQueue<>();
 
-		for (int from = 0; from < islandCount; from++) {
-			for (int to = from + 1; to < islandCount; to++) {
-				double price = getDistance(islands[from], islands[to]) * taxRate;
-				edges[idx++] = new Edge(from, to, price);
-			}
-		}
-	}
+        priorityQueue.offer(new Edge(0, 0));
+        double total = 0;
+        while (!priorityQueue.isEmpty()) {
+            Edge edge = priorityQueue.poll();
 
-	private static int find(int islandId) {
-		if (parents[islandId] == islandId)
-			return islandId;
+            if (visited[edge.to]) {
+                continue;
+            }
 
-		return parents[islandId] = find(parents[islandId]);
-	}
+            visited[edge.to] = true;
+            total += edge.price;
 
-	private static boolean union(int from, int to) {
-		int fromParent = find(from);
-		int toParent = find(to);
+            for (Edge newEdge : graph[edge.to]) {
+                if (!visited[newEdge.to]) {
+                    priorityQueue.offer(newEdge);
+                }
+            }
+        }
 
-		if (fromParent == toParent)
-			return false;
+        minTax = total;
+    }
 
-		if (ranks[fromParent] > ranks[toParent]) {
-			parents[toParent] = fromParent;
-			return true;
-		}
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer tokenizer = new StreamTokenizer(reader);
+        StringBuilder builder = new StringBuilder();
 
-		if (ranks[fromParent] == ranks[toParent])
-			ranks[toParent]++;
+        int testCount = read(tokenizer);
 
-		parents[fromParent] = toParent;
+        for (int testNumber = 1; testNumber <= testCount; testNumber++) {
+            init(tokenizer);
+            findMinCombination();
+            builder.append('#').append(testNumber).append(' ').append(Math.round(minTax)).append('\n');
+        }
 
-		return true;
-	}
+        System.out.println(builder);
 
-	private static void findMinCombination() {
-		int count = 0;
-		int max = islandCount - 1;
-		for (Edge edge : edges) {
-			if (union(edge.from, edge.to)) {
-				minTax += edge.price;
-				if (++count == max) {
-					break;
-				}
-			}
-		}
-	}
+    }
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		StreamTokenizer tokenizer = new StreamTokenizer(reader);
-		StringBuilder builder = new StringBuilder();
+    private static int read(StreamTokenizer tokenizer) throws IOException {
+        tokenizer.nextToken();
+        return (int) tokenizer.nval;
+    }
 
-		int testCount = read(tokenizer);
+    private static double readDouble(StreamTokenizer tokenizer) throws IOException {
+        tokenizer.nextToken();
+        return tokenizer.nval;
+    }
 
-		for (int testNumber = 1; testNumber <= testCount; testNumber++) {
-			init(tokenizer);
-			findMinCombination();
-			builder.append('#').append(testNumber).append(' ').append(Math.round(minTax)).append('\n');
-		}
+    private static double getDistance(int island1, int island2) {
+        return Math.pow(Math.abs(islandX[island1] - islandX[island2]), 2) + Math.pow(
+                Math.abs(islandY[island1] - islandY[island2]), 2);
+    }
 
-		System.out.println(builder);
+    private static class Edge implements Comparable<Edge> {
+        int to;
+        double price;
 
-	}
+        public Edge(int to, double price) {
+            this.to = to;
+            this.price = price;
+        }
 
-	private static int read(StreamTokenizer tokenizer) throws IOException {
-		tokenizer.nextToken();
-		return (int) tokenizer.nval;
-	}
-
-	private static double readDouble(StreamTokenizer tokenizer) throws IOException {
-		tokenizer.nextToken();
-		return tokenizer.nval;
-	}
-
-	private static double getDistance(Island island1, Island island2) {
-		return Math.pow(Math.abs(island1.x - island2.x), 2) + Math.pow(Math.abs(island1.y - island2.y), 2);
-	}
-
-	private static class Island {
-		int x, y;
-	}
-
-	private static class Edge implements Comparable<Edge> {
-		int from, to;
-		double price;
-
-		public Edge(int from, int to, double price) {
-			this.from = from;
-			this.to = to;
-			this.price = price;
-		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return Double.compare(this.price, o.price);
-		}
-
-		@Override
-		public String toString() {
-			return "Edge [from=" + from + ", to=" + to + ", price=" + price + "]";
-		}
-
-	}
+        @Override
+        public int compareTo(Edge o) {
+            return Double.compare(this.price, o.price);
+        }
+    }
 
 }
