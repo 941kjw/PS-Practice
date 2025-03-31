@@ -2,119 +2,112 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.PriorityQueue;
 
 /**
- * 
+ *
  * 단순한 크루스칼 알고리즘 문제
- * 
- * 
+ *
+ *
  * 1. 입력받은 간선을 작은 순서대로 정렬한다.
  * 2. 최상단 간선부터 선택하며, union-find를 통해 같은 그래프 상에 존재하는 정점이면 건너뛴다.
  * 3. 정점 수 -1 만큼 선택하면 종료한다.
- * 
+ *
  *
  */
 
 public class Solution {
 
-	private static int vertexCount;
-	private static int edgeCount;
+    private static int vertexCount;
+    private static int edgeCount;
 
-	private static int[] parents;
-	private static long weightSum;
 
-	private static Edge[] edges;
+    private static long weightSum;
+    private static boolean[] visited;
+    private static List<Edge>[] edges;
 
-	private static void init(StreamTokenizer tokenizer) throws IOException {
+    private static void init(StreamTokenizer tokenizer) throws IOException {
 
-		vertexCount = read(tokenizer);
-		edgeCount = read(tokenizer);
+        vertexCount = read(tokenizer);
+        edgeCount = read(tokenizer);
 
-		parents = new int[vertexCount];
-		edges = new Edge[edgeCount];
-		weightSum = 0;
+        edges = new List[vertexCount];
+        visited = new boolean[vertexCount];
+        weightSum = 0;
 
-		for (int idx = 0; idx < edgeCount; idx++) {
-			int from = read(tokenizer) - 1;
-			int to = read(tokenizer) - 1;
-			int weight = read(tokenizer);
+        for (int idx = 0; idx < edgeCount; idx++) {
+            int from = read(tokenizer) - 1;
+            int to = read(tokenizer) - 1;
+            int weight = read(tokenizer);
+            if (edges[from] == null) {
+                edges[from] = new ArrayList<>();
+            }
+            edges[from].add(new Edge(to, weight));
 
-			edges[idx] = new Edge(from, to, weight);
-		}
+            if (edges[to] == null) {
+                edges[to] = new ArrayList<>();
+            }
+            edges[to].add(new Edge(from, weight));
+        }
+    }
 
-		for (int idx = 0; idx < vertexCount; idx++) {
-			parents[idx] = idx;
-		}
+    private static void makeTree() {
+        PriorityQueue<Edge> priorityQueue = new PriorityQueue<>();
 
-		Arrays.sort(edges);
-	}
+        priorityQueue.add(new Edge(0, 0));
 
-	private static int find(int vertexNum) {
-		if (parents[vertexNum] == vertexNum)
-			return vertexNum;
-		return parents[vertexNum] = find(parents[vertexNum]);
-	}
+        while (!priorityQueue.isEmpty()) {
+            Edge cur = priorityQueue.poll();
 
-	private static boolean union(int from, int to) {
-		int fromParent = find(from);
-		int toParent = find(to);
+            if (visited[cur.to]) {
+                continue;
+            }
 
-		if (fromParent == toParent)
-			return false;
+            visited[cur.to] = true;
+            weightSum += cur.weight;
 
-		parents[toParent] = fromParent;
+            for (Edge next : edges[cur.to]) {
+                if (!visited[next.to]) {
+                    priorityQueue.add(next);
+                }
+            }
+        }
+    }
 
-		return true;
-	}
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer tokenizer = new StreamTokenizer(reader);
+        StringBuilder builder = new StringBuilder();
 
-	private static void makeTree() {
-		int count = 0;
-		int max = vertexCount - 1;
+        int testCount = read(tokenizer);
 
-		for (Edge edge : edges) {
-			if (union(edge.from, edge.to)) {
-				weightSum += edge.weight;
+        for (int testNumber = 1; testNumber <= testCount; testNumber++) {
+            init(tokenizer);
+            makeTree();
+            builder.append('#').append(testNumber).append(' ').append(weightSum).append('\n');
 
-				if (++count == max)
-					break;
-			}
-		}
-	}
+        }
+        System.out.println(builder);
+    }
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		StreamTokenizer tokenizer = new StreamTokenizer(reader);
-		StringBuilder builder = new StringBuilder();
+    private static int read(StreamTokenizer tokenizer) throws IOException {
+        tokenizer.nextToken();
+        return (int) tokenizer.nval;
+    }
 
-		int testCount = read(tokenizer);
+    private static class Edge implements Comparable<Edge> {
+        int to, weight;
 
-		for (int testNumber = 1; testNumber <= testCount; testNumber++) {
-			init(tokenizer);
-			makeTree();
-			builder.append('#').append(testNumber).append(' ').append(weightSum).append('\n');
+        public Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+        }
 
-		}
-		System.out.println(builder);
-	}
-
-	private static class Edge implements Comparable<Edge> {
-		int from, to, weight;
-
-		public Edge(int from, int to, int weight) {
-			this.from = from;
-			this.to = to;
-			this.weight = weight;
-		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return Integer.compare(this.weight, o.weight);
-		}
-	}
-
-	private static int read(StreamTokenizer tokenizer) throws IOException {
-		tokenizer.nextToken();
-		return (int) tokenizer.nval;
-	}
+        @Override
+        public int compareTo(Edge o) {
+            return Integer.compare(this.weight, o.weight);
+        }
+    }
 }
