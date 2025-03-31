@@ -2,22 +2,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Solution {
 
     private static final int[][] delta = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
     private static int[][] map;
-    private static List<Pos> cores;
-
+    private static Pos[] cores;
+    private static int totalCoresCount;
     private static int maxConnected;
     private static int minLength;
 
     private static void init(StreamTokenizer tokenizer) throws IOException {
         int mapSize = read(tokenizer);
         map = new int[mapSize][mapSize];
-        cores = new ArrayList<>();
+        cores = new Pos[12];
+        totalCoresCount = 0;
         maxConnected = Integer.MIN_VALUE;
         minLength = Integer.MAX_VALUE;
 
@@ -29,14 +28,14 @@ public class Solution {
                     if (row == 0 || row == mapSize - 1 || col == 0 || col == mapSize - 1) {
                         continue;
                     }
-                    cores.add(new Pos(row, col));
+                    cores[totalCoresCount++] = new Pos(row, col);
                 }
             }
         }
     }
 
     private static void tryConnect(int number, int coreCount, int length) {
-        if (number == cores.size()) {
+        if (number == totalCoresCount) {
             if (maxConnected < coreCount) {
                 maxConnected = coreCount;
                 minLength = length;
@@ -47,8 +46,8 @@ public class Solution {
         }
 
         for (int idx = 0; idx < 4; ++idx) {
-            int row = cores.get(number).row;
-            int col = cores.get(number).col;
+            int row = cores[number].row;
+            int col = cores[number].col;
 
             int placedLength = place(row, col, idx);
             if (placedLength > 0) {
