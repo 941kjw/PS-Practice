@@ -2,123 +2,106 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.PriorityQueue;
 
 /**
- * 
+ *
  * 단순한 크루스칼 알고리즘 문제
- * 
- * 
+ *
+ *
  * 1. 입력받은 간선을 작은 순서대로 정렬한다.
  * 2. 최상단 간선부터 선택하며, union-find를 통해 같은 그래프 상에 존재하는 정점이면 건너뛴다.
  * 3. 정점 수 -1 만큼 선택하면 종료한다.
- * 
+ *
  *
  */
 
 public class Main {
 
-	private static int vertexCount;
-	private static int edgeCount;
+    private static int vertexCount;
+    private static int edgeCount;
 
-	private static int[] parents;
-	private static int[] ranks;
-	private static long weightSum;
+    private static long weightSum;
 
-	private static Edge[] edges;
+    private static boolean[] visited;
+    private static List<Edge>[] edges;
 
-	private static void init(StreamTokenizer tokenizer) throws IOException {
+    private static void init(StreamTokenizer tokenizer) throws IOException {
 
-		vertexCount = read(tokenizer);
-		edgeCount = read(tokenizer);
+        vertexCount = read(tokenizer);
+        edgeCount = read(tokenizer);
 
-		parents = new int[vertexCount];
-		ranks = new int[vertexCount];
-		edges = new Edge[edgeCount];
-		weightSum = 0;
+        visited = new boolean[vertexCount];
+        edges = new List[vertexCount];
+        weightSum = 0;
 
-		for (int idx = 0; idx < edgeCount; idx++) {
-			int from = read(tokenizer) - 1;
-			int to = read(tokenizer) - 1;
-			int weight = read(tokenizer);
+        for (int idx = 0; idx < edgeCount; idx++) {
+            int from = read(tokenizer) - 1;
+            int to = read(tokenizer) - 1;
+            int weight = read(tokenizer);
 
-			edges[idx] = new Edge(from, to, weight);
-		}
+            if (edges[from] == null) {
+                edges[from] = new ArrayList<>();
+            }
+            edges[from].add(new Edge(to, weight));
 
-		for (int idx = 0; idx < vertexCount; idx++) {
-			parents[idx] = idx;
-		}
+            if (edges[to] == null) {
+                edges[to] = new ArrayList<>();
+            }
+            edges[to].add(new Edge(from, weight));
+        }
+    }
 
-		Arrays.sort(edges);
-	}
+    private static void makeTree() {
+        PriorityQueue<Edge> priorityQueue = new PriorityQueue<>();
+        priorityQueue.add(new Edge(0, 0));
 
-	private static int find(int vertexNum) {
-		if (parents[vertexNum] == vertexNum)
-			return vertexNum;
-		return parents[vertexNum] = find(parents[vertexNum]);
-	}
+        while (!priorityQueue.isEmpty()) {
+            Edge cur = priorityQueue.poll();
 
-	private static boolean union(int from, int to) {
-		int fromParent = find(from);
-		int toParent = find(to);
+            if (visited[cur.to]) {
+                continue;
+            }
 
-		if (fromParent == toParent)
-			return false;
+            visited[cur.to] = true;
+            weightSum += cur.weight;
 
-		if (ranks[fromParent] > ranks[toParent]) {
-			parents[toParent] = fromParent;
-			return true;
-		}
+            for (Edge next : edges[cur.to]) {
+                if (!visited[next.to]) {
+                    priorityQueue.add(next);
+                }
+            }
+        }
+    }
 
-		if (ranks[fromParent] == ranks[toParent])
-			ranks[toParent]++;
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer tokenizer = new StreamTokenizer(reader);
 
-		parents[fromParent] = toParent;
+        init(tokenizer);
+        makeTree();
 
-		return true;
-	}
+        System.out.println(weightSum);
+    }
 
-	private static void makeTree() {
-		int count = 0;
-		int max = vertexCount - 1;
+    private static int read(StreamTokenizer tokenizer) throws IOException {
+        tokenizer.nextToken();
+        return (int) tokenizer.nval;
+    }
 
-		for (Edge edge : edges) {
-			if (union(edge.from, edge.to)) {
-				weightSum += edge.weight;
+    private static class Edge implements Comparable<Edge> {
+        int to, weight;
 
-				if (++count == max)
-					break;
-			}
-		}
-	}
+        public Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+        }
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		StreamTokenizer tokenizer = new StreamTokenizer(reader);
-
-		init(tokenizer);
-		makeTree();
-
-		System.out.println(weightSum);
-	}
-
-	private static class Edge implements Comparable<Edge> {
-		int from, to, weight;
-
-		public Edge(int from, int to, int weight) {
-			this.from = from;
-			this.to = to;
-			this.weight = weight;
-		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return Integer.compare(this.weight, o.weight);
-		}
-	}
-
-	private static int read(StreamTokenizer tokenizer) throws IOException {
-		tokenizer.nextToken();
-		return (int) tokenizer.nval;
-	}
+        @Override
+        public int compareTo(Edge o) {
+            return Integer.compare(this.weight, o.weight);
+        }
+    }
 }
