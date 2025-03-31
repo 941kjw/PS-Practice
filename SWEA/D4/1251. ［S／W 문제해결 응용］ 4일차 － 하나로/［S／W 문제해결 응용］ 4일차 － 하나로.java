@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
 
 /**
  *
@@ -24,6 +23,7 @@ public class Solution {
     private static int[] islandX;
     private static int[] islandY;
     private static boolean[] visited;
+    private static double[] minEdge;
     private static double taxRate;
     private static double minTax;
     private static List<Edge>[] graph;
@@ -35,16 +35,18 @@ public class Solution {
         visited = new boolean[islandCount];
         islandX = new int[islandCount];
         islandY = new int[islandCount];
+        minEdge = new double[islandCount];
         graph = new List[islandCount];
 
         minTax = 0;
 
-        for (int id = 0; id < islandCount; id++) {
-            islandX[id] = read(tokenizer);
+        for (int idx = 0; idx < islandCount; idx++) {
+            islandX[idx] = read(tokenizer);
+            minEdge[idx] = Double.MAX_VALUE;
         }
 
-        for (int id = 0; id < islandCount; id++) {
-            islandY[id] = read(tokenizer);
+        for (int idx = 0; idx < islandCount; idx++) {
+            islandY[idx] = read(tokenizer);
         }
 
         taxRate = readDouble(tokenizer);
@@ -69,28 +71,32 @@ public class Solution {
     }
 
     private static void findMinCombination() {
-        PriorityQueue<Edge> priorityQueue = new PriorityQueue<>();
+        minEdge[0] = 0;
+        for (int idx = 0; idx < islandCount; idx++) {
+            int minIdx = -1;
+            double min = Double.MAX_VALUE;
 
-        priorityQueue.offer(new Edge(0, 0));
-        double total = 0;
-        while (!priorityQueue.isEmpty()) {
-            Edge edge = priorityQueue.poll();
-
-            if (visited[edge.to]) {
-                continue;
+            // 최소 간선 찾기 (비용이 가장 작은 정점 u)
+            for (int subIdx = 0; subIdx < islandCount; subIdx++) {
+                if (!visited[subIdx] && minEdge[subIdx] < min) {
+                    min = minEdge[subIdx];
+                    minIdx = subIdx;
+                }
             }
 
-            visited[edge.to] = true;
-            total += edge.price;
+            if (minIdx == -1) {
+                break;
+            }
 
-            for (Edge newEdge : graph[edge.to]) {
-                if (!visited[newEdge.to]) {
-                    priorityQueue.offer(newEdge);
+            visited[minIdx] = true;
+            minTax += minEdge[minIdx];
+
+            for (Edge e : graph[minIdx]) {
+                if (!visited[e.to] && e.price < minEdge[e.to]) {
+                    minEdge[e.to] = e.price;
                 }
             }
         }
-
-        minTax = total;
     }
 
     public static void main(String[] args) throws IOException {
@@ -107,7 +113,6 @@ public class Solution {
         }
 
         System.out.println(builder);
-
     }
 
     private static int read(StreamTokenizer tokenizer) throws IOException {
