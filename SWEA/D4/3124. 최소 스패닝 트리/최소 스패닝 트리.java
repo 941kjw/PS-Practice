@@ -8,11 +8,11 @@ import java.util.PriorityQueue;
 
 /**
  *
- * 단순한 크루스칼 알고리즘 문제
+ * 단순한 프림 알고리즘 문제
  *
  *
- * 1. 입력받은 간선을 작은 순서대로 정렬한다.
- * 2. 최상단 간선부터 선택하며, union-find를 통해 같은 그래프 상에 존재하는 정점이면 건너뛴다.
+ * 1. 입력받은 간선을 간선 리스트에 저장한다. 이때, 양뱡향으로 저장해야 함.
+ * 2. 우선순위 큐에 0을 향하는 0 만큼의 길이의 간선을 넣고(0부터 시작하도록)
  * 3. 정점 수 -1 만큼 선택하면 종료한다.
  *
  *
@@ -57,8 +57,8 @@ public class Solution {
         PriorityQueue<Edge> priorityQueue = new PriorityQueue<>();
 
         priorityQueue.add(new Edge(0, 0));
-
-        while (!priorityQueue.isEmpty()) {
+        int count = 0;
+        while (!priorityQueue.isEmpty() && count <= vertexCount) {
             Edge cur = priorityQueue.poll();
 
             if (visited[cur.to]) {
@@ -66,6 +66,7 @@ public class Solution {
             }
 
             visited[cur.to] = true;
+            ++count;
             weightSum += cur.weight;
 
             for (Edge next : edges[cur.to]) {
