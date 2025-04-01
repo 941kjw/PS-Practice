@@ -55,13 +55,16 @@ public class Main {
 		while (!queue.isEmpty()) {
 			Pos cur = queue.poll();
 
+			if (copiedLab[cur.row][cur.col] == -2)
+				continue;
+
 			if (copiedLab[cur.row][cur.col] == 0)
 				++virusCounter;
 
 			if (virusCounter > tolerableVirusCount)
 				return;
 
-			copiedLab[cur.row][cur.col] = 2;
+			copiedLab[cur.row][cur.col] = -2;
 
 			for (int dir = 0; dir < 4; ++dir) {
 				int nrow = cur.row + dy[dir];
@@ -75,7 +78,7 @@ public class Main {
 		}
 		int currentSafeZone = labHeight * labWidth - wallCount - 3 - virusCounter;
 
-//		System.out.println("Result :\n total Size : " + (labHeight * labWidth) + ", wallCount : " + (wallCount + 3) + ", virusCount : " + virusCounter);
+		//		System.out.println("Result :\n total Size : " + (labHeight * labWidth) + ", wallCount : " + (wallCount + 3) + ", virusCount : " + virusCounter);
 		maxSafeZone = Math.max(maxSafeZone, currentSafeZone);
 	}
 
