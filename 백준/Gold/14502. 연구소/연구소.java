@@ -16,12 +16,14 @@ public class Main {
 	private static int[][] laboratory;
 	private static int[][] copiedLab;
 	private static int[] emptyList;
+	private static int[] virusList;
 
 	private static int labHeight;
 	private static int labWidth;
 	private static int wallCount;
 	private static int maxSafeZone;
 	private static int emptyZoneCounter;
+	private static int initialVirusCounter;
 
 	private static int[] dy = { -1, 0, 1, 0 };
 	private static int[] dx = { 0, 1, 0, -1 };
@@ -33,19 +35,24 @@ public class Main {
 		maxSafeZone = 0;
 		wallCount = 0;
 		emptyZoneCounter = 0;
+		initialVirusCounter = 0;
 		emptyList = new int[labHeight * labWidth];
+		virusList = new int[labHeight * labWidth];
 		laboratory = new int[labHeight][labWidth];
 		copiedLab = new int[labHeight][labWidth];
 
-		for (int row = 0; row < labHeight; row++) {
-			for (int col = 0; col < labWidth; col++) {
+		for (int row = 0; row < labHeight; ++row) {
+			for (int col = 0; col < labWidth; ++col) {
 				int value = read(tokenizer);
-				laboratory[row][col] = value;
-				if (value == 1)
-					++wallCount;
 				if (value == 0) {
 					emptyList[emptyZoneCounter++] = row * 10 + col;
 				}
+				if (value == 1)
+					++wallCount;
+				if (value == 2)
+					virusList[initialVirusCounter++] = row * 10 + col;
+				laboratory[row][col] = value;
+
 			}
 		}
 	}
@@ -57,14 +64,9 @@ public class Main {
 		resetLabMap();
 		int virusCounter = 0;
 
-		for (int row = 0; row < labHeight; row++) {
-			for (int col = 0; col < labWidth; col++) {
-				if (copiedLab[row][col] == 2) {
-					++virusCounter;
-					queue.add(row * 10 + col);
-					copiedLab[row][col] = -2;
-				}
-			}
+		for (int idx = 0; idx < initialVirusCounter; idx++) {
+			queue.add(virusList[idx]);
+			++virusCounter;
 		}
 
 		while (!queue.isEmpty()) {
@@ -76,7 +78,7 @@ public class Main {
 			if (virusCounter > tolerableVirusCount)
 				return;
 
-			copiedLab[row][col] = -2;
+			copiedLab[row][col] = 2;
 
 			for (int dir = 0; dir < 4; ++dir) {
 				int nrow = row + dy[dir];
@@ -84,7 +86,7 @@ public class Main {
 
 				if (nrow < 0 || nrow >= labHeight || ncol < 0 || ncol >= labWidth || copiedLab[nrow][ncol] != 0)
 					continue;
-				copiedLab[nrow][ncol] = -2;
+				copiedLab[nrow][ncol] = 2;
 				++virusCounter;
 				queue.offer(nrow * 10 + ncol);
 			}
@@ -117,8 +119,8 @@ public class Main {
 	}
 
 	private static void resetLabMap() {
-		for (int row = 0; row < labHeight; row++) {
-			for (int col = 0; col < labWidth; col++) {
+		for (int row = 0; row < labHeight; ++row) {
+			for (int col = 0; col < labWidth; ++col) {
 				copiedLab[row][col] = laboratory[row][col];
 			}
 		}
