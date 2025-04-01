@@ -48,18 +48,13 @@ public class Main {
 				if (copiedLab[row][col] == 2) {
 					++virusCounter;
 					queue.add(new Pos(row, col));
+					copiedLab[row][col] = -2;
 				}
 			}
 		}
 
 		while (!queue.isEmpty()) {
 			Pos cur = queue.poll();
-
-			if (copiedLab[cur.row][cur.col] == -2)
-				continue;
-
-			if (copiedLab[cur.row][cur.col] == 0)
-				++virusCounter;
 
 			if (virusCounter > tolerableVirusCount)
 				return;
@@ -72,7 +67,8 @@ public class Main {
 
 				if (nrow < 0 || nrow >= labHeight || ncol < 0 || ncol >= labWidth || copiedLab[nrow][ncol] != 0)
 					continue;
-
+				copiedLab[nrow][ncol] = -2;
+				++virusCounter;
 				queue.offer(new Pos(nrow, ncol));
 			}
 		}
