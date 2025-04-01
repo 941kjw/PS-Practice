@@ -17,7 +17,6 @@ public class Main {
 
 	private static int[][] laboratory;
 	private static int[][] copiedLab;
-	private static Pos[] selected;
 	private static List<Integer> emptyList;
 
 	private static int labHeight;
@@ -34,7 +33,6 @@ public class Main {
 		labWidth = read(tokenizer);
 		maxSafeZone = 0;
 		wallCount = 0;
-		selected = new Pos[3];
 		emptyList = new ArrayList<>();
 		laboratory = new int[labHeight][labWidth];
 		copiedLab = new int[labHeight][labWidth];
@@ -53,7 +51,7 @@ public class Main {
 
 	private static void spreadVirus() {
 		int tolerableVirusCount = labHeight * labWidth - wallCount - 3 - maxSafeZone;
-		Queue<Pos> queue = new ArrayDeque<>();
+		Queue<Integer> queue = new ArrayDeque<>();
 
 		resetLabMap();
 		int virusCounter = 0;
@@ -62,29 +60,32 @@ public class Main {
 			for (int col = 0; col < labWidth; col++) {
 				if (copiedLab[row][col] == 2) {
 					++virusCounter;
-					queue.add(new Pos(row, col));
+					queue.add(row * 10 + col);
 					copiedLab[row][col] = -2;
 				}
 			}
 		}
 
 		while (!queue.isEmpty()) {
-			Pos cur = queue.poll();
+			Integer cur = queue.poll();
+
+			int row = cur / 10;
+			int col = cur % 10;
 
 			if (virusCounter > tolerableVirusCount)
 				return;
 
-			copiedLab[cur.row][cur.col] = -2;
+			copiedLab[row][col] = -2;
 
 			for (int dir = 0; dir < 4; ++dir) {
-				int nrow = cur.row + dy[dir];
-				int ncol = cur.col + dx[dir];
+				int nrow = row + dy[dir];
+				int ncol = col + dx[dir];
 
 				if (nrow < 0 || nrow >= labHeight || ncol < 0 || ncol >= labWidth || copiedLab[nrow][ncol] != 0)
 					continue;
 				copiedLab[nrow][ncol] = -2;
 				++virusCounter;
-				queue.offer(new Pos(nrow, ncol));
+				queue.offer(nrow * 10 + ncol);
 			}
 		}
 		int currentSafeZone = labHeight * labWidth - wallCount - 3 - virusCounter;
@@ -136,14 +137,5 @@ public class Main {
 	private static int read(StreamTokenizer tokenizer) throws IOException {
 		tokenizer.nextToken();
 		return (int) tokenizer.nval;
-	}
-
-	private static class Pos {
-		int row, col;
-
-		public Pos(int row, int col) {
-			this.row = row;
-			this.col = col;
-		}
 	}
 }
