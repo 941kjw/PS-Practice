@@ -59,7 +59,7 @@ public class Main {
 
 	private static void spreadVirus() {
 		int tolerableVirusCount = labHeight * labWidth - wallCount - 3 - maxSafeZone;
-		Queue<Integer> queue = new ArrayDeque<>();
+		Queue<Integer> queue = new ArrayDeque<>(64);
 
 		resetLabMap();
 		int virusCounter = 0;
