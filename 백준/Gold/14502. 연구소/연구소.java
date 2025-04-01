@@ -11,6 +11,7 @@ public class Main {
 	private static int[][] copiedLab;
 	private static int labHeight;
 	private static int labWidth;
+	private static int wallCount;
 	private static int maxSafeZone;
 
 	private static int[] dy = { -1, 0, 1, 0 };
@@ -21,7 +22,7 @@ public class Main {
 		labHeight = read(tokenizer);
 		labWidth = read(tokenizer);
 		maxSafeZone = 0;
-
+		wallCount = 0;
 		laboratory = new int[labHeight][labWidth];
 		copiedLab = new int[labHeight][labWidth];
 
@@ -29,26 +30,38 @@ public class Main {
 			for (int col = 0; col < labWidth; col++) {
 				int value = read(tokenizer);
 				laboratory[row][col] = value;
+				if (value == 1)
+					++wallCount;
 			}
 		}
 	}
 
 	private static void spreadVirus() {
+		int tolerableVirusCount = labHeight * labWidth - wallCount - 3 - maxSafeZone;
 		Queue<Pos> queue = new ArrayDeque<>();
 
 		resetLabMap();
+		int virusCounter = 0;
 
 		for (int row = 0; row < labHeight; row++) {
 			for (int col = 0; col < labWidth; col++) {
-				if (copiedLab[row][col] == 2)
+				if (copiedLab[row][col] == 2) {
+					++virusCounter;
 					queue.add(new Pos(row, col));
+				}
 			}
 		}
 
 		while (!queue.isEmpty()) {
 			Pos cur = queue.poll();
 
-			copiedLab[cur.row][cur.col] = -2;
+			if (copiedLab[cur.row][cur.col] == 0)
+				++virusCounter;
+
+			if (virusCounter > tolerableVirusCount)
+				return;
+
+			copiedLab[cur.row][cur.col] = 2;
 
 			for (int dir = 0; dir < 4; ++dir) {
 				int nrow = cur.row + dy[dir];
@@ -60,23 +73,15 @@ public class Main {
 				queue.offer(new Pos(nrow, ncol));
 			}
 		}
-	}
+		int currentSafeZone = labHeight * labWidth - wallCount - 3 - virusCounter;
 
-	private static int countSafeZone() {
-		int counter = 0;
-		for (int row = 0; row < labHeight; row++) {
-			for (int col = 0; col < labWidth; col++) {
-				if (copiedLab[row][col] == 0)
-					counter++;
-			}
-		}
-		return counter;
+//		System.out.println("Result :\n total Size : " + (labHeight * labWidth) + ", wallCount : " + (wallCount + 3) + ", virusCount : " + virusCounter);
+		maxSafeZone = Math.max(maxSafeZone, currentSafeZone);
 	}
 
 	private static void tryPlaceWall(int count) {
 		if (count == 3) {
 			spreadVirus();
-			maxSafeZone = Math.max(maxSafeZone, countSafeZone());
 			return;
 		}
 
