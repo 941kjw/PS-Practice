@@ -3,8 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 
 /**
@@ -17,12 +15,13 @@ public class Main {
 
 	private static int[][] laboratory;
 	private static int[][] copiedLab;
-	private static List<Integer> emptyList;
+	private static int[] emptyList;
 
 	private static int labHeight;
 	private static int labWidth;
 	private static int wallCount;
 	private static int maxSafeZone;
+	private static int emptyZoneCounter;
 
 	private static int[] dy = { -1, 0, 1, 0 };
 	private static int[] dx = { 0, 1, 0, -1 };
@@ -33,7 +32,8 @@ public class Main {
 		labWidth = read(tokenizer);
 		maxSafeZone = 0;
 		wallCount = 0;
-		emptyList = new ArrayList<>();
+		emptyZoneCounter = 0;
+		emptyList = new int[labHeight * labWidth];
 		laboratory = new int[labHeight][labWidth];
 		copiedLab = new int[labHeight][labWidth];
 
@@ -43,8 +43,9 @@ public class Main {
 				laboratory[row][col] = value;
 				if (value == 1)
 					++wallCount;
-				if (value == 0)
-					emptyList.add(row * 10 + col);
+				if (value == 0) {
+					emptyList[emptyZoneCounter++] = row * 10 + col;
+				}
 			}
 		}
 	}
@@ -98,10 +99,10 @@ public class Main {
 			return;
 		}
 
-		if (element == emptyList.size())
+		if (element == emptyZoneCounter)
 			return;
 
-		Integer pos = emptyList.get(element);
+		Integer pos = emptyList[element];
 
 		int row = pos / 10;
 		int col = pos % 10;
