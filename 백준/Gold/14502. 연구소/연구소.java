@@ -3,12 +3,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
+/**
+ * 
+ * 
+ * 
+ *
+ */
 public class Main {
 
 	private static int[][] laboratory;
 	private static int[][] copiedLab;
+	private static Pos[] selected;
+	private static List<Integer> emptyList;
+
 	private static int labHeight;
 	private static int labWidth;
 	private static int wallCount;
@@ -23,6 +34,8 @@ public class Main {
 		labWidth = read(tokenizer);
 		maxSafeZone = 0;
 		wallCount = 0;
+		selected = new Pos[3];
+		emptyList = new ArrayList<>();
 		laboratory = new int[labHeight][labWidth];
 		copiedLab = new int[labHeight][labWidth];
 
@@ -32,6 +45,8 @@ public class Main {
 				laboratory[row][col] = value;
 				if (value == 1)
 					++wallCount;
+				if (value == 0)
+					emptyList.add(row * 10 + col);
 			}
 		}
 	}
@@ -73,26 +88,30 @@ public class Main {
 			}
 		}
 		int currentSafeZone = labHeight * labWidth - wallCount - 3 - virusCounter;
-
-		//		System.out.println("Result :\n total Size : " + (labHeight * labWidth) + ", wallCount : " + (wallCount + 3) + ", virusCount : " + virusCounter);
 		maxSafeZone = Math.max(maxSafeZone, currentSafeZone);
 	}
 
-	private static void tryPlaceWall(int count) {
-		if (count == 3) {
+	private static void tryPlaceWall(int selected, int element) {
+		if (selected == 3) {
 			spreadVirus();
 			return;
 		}
 
-		for (int row = 0; row < labHeight; row++) {
-			for (int col = 0; col < labWidth; col++) {
-				if (laboratory[row][col] == 0) {
-					laboratory[row][col] = 1;
-					tryPlaceWall(count + 1);
-					laboratory[row][col] = 0;
-				}
-			}
-		}
+		if (element == emptyList.size())
+			return;
+
+		Integer pos = emptyList.get(element);
+
+		int row = pos / 10;
+		int col = pos % 10;
+
+		laboratory[row][col] = 1;
+
+		tryPlaceWall(selected + 1, element + 1);
+
+		laboratory[row][col] = 0;
+		tryPlaceWall(selected, element + 1);
+
 	}
 
 	private static void resetLabMap() {
@@ -109,7 +128,7 @@ public class Main {
 
 		init(tokenizer);
 
-		tryPlaceWall(0);
+		tryPlaceWall(0, 0);
 
 		System.out.println(maxSafeZone);
 	}
