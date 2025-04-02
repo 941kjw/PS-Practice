@@ -2,8 +2,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 
@@ -23,7 +21,9 @@ import java.util.List;
 public class Solution {
 
 	private static int[][] homeMap;
-	private static List<Home> homes;
+	private static int[] homeRows;
+	private static int[] homeCols;
+	private static int homeCount;
 	private static int homeIncluded;
 	private static int profit;
 	private static int payable;
@@ -33,7 +33,9 @@ public class Solution {
 		payable = read(tokenizer);
 
 		homeMap = new int[mapSize][mapSize];
-		homes = new ArrayList<>(200);
+		homeRows = new int[mapSize * mapSize];
+		homeCols = new int[mapSize * mapSize];
+		homeCount = 0;
 		homeIncluded = 0;
 		profit = 0;
 
@@ -41,7 +43,9 @@ public class Solution {
 			for (int col = 0; col < mapSize; col++) {
 				int value = read(tokenizer);
 				if (value == 1) {
-					homes.add(new Home(row, col));
+					homeRows[homeCount] = row;
+					homeCols[homeCount] = col;
+					++homeCount;
 					homeMap[row][col] = value;
 				}
 			}
@@ -69,10 +73,9 @@ public class Solution {
 					int counter = 0;
 					int tempProfit;
 
-					for (Home home : homes) {
-						if (isInRange(home.row, home.col, row, col, range)) {
+					for (int idx = 0; idx < homeCount; idx++) {
+						if (isInRange(homeRows[idx], homeCols[idx], row, col, range))
 							++counter;
-						}
 					}
 
 					tempProfit = (counter * payable) - (range * range + (range - 1) * (range - 1));
@@ -100,12 +103,5 @@ public class Solution {
 		return (Math.abs(rowCenter - rowQuery) + Math.abs(colCenter - colQuery)) < range;
 	}
 
-	private static class Home {
-		int row, col;
-
-		public Home(int row, int col) {
-			this.row = row;
-			this.col = col;
-		}
-	}
+	
 }
