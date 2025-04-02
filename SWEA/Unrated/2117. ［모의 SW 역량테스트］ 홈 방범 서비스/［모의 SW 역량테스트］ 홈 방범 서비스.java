@@ -69,7 +69,7 @@ public class Solution {
 	private static void find() {
 		for (int row = 0; row < homeMap.length; ++row) {
 			for (int col = 0; col < homeMap.length; ++col) {
-				for (int range = 1; range < homeMap.length * 1.5; ++range) {
+				for (int range = 1; range < homeMap.length * 1.4; ++range) {
 					int counter = 0;
 					int tempProfit;
 
