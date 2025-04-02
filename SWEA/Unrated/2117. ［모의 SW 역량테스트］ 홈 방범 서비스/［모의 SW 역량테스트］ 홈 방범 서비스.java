@@ -11,9 +11,8 @@ import java.io.StreamTokenizer;
  * 어떻게 풀까??
  * 매번 쿼리하기에는 너무 많다.
  * 최대 20*20이고, K*K만큼 확인해야 한다...
- * 
- * 
- * 
+ * 각 좌표에서 집들과의 거리를 재는 편이 간단.
+ * 또한, 도시 밖으로 넘어가도 비용은 동일하게 든다.
  * !! 십자 모양 범위 확인법 !!
  * 직각 거리 < 범위
  *
@@ -23,6 +22,7 @@ public class Solution {
 	private static int[][] homeMap;
 	private static int[] homeRows;
 	private static int[] homeCols;
+
 	private static int homeCount;
 	private static int homeIncluded;
 	private static int profit;
@@ -69,7 +69,7 @@ public class Solution {
 	private static void find() {
 		for (int row = 0; row < homeMap.length; ++row) {
 			for (int col = 0; col < homeMap.length; ++col) {
-				for (int range = 1; range < homeMap.length * 2; ++range) {
+				for (int range = 1; range < homeMap.length * 1.5; ++range) {
 					int counter = 0;
 					int tempProfit;
 
@@ -103,5 +103,4 @@ public class Solution {
 		return (Math.abs(rowCenter - rowQuery) + Math.abs(colCenter - colQuery)) < range;
 	}
 
-	
 }
