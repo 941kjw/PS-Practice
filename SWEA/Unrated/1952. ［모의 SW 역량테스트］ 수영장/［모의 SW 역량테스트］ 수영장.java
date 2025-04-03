@@ -12,8 +12,8 @@ import java.io.StreamTokenizer;
  * 
  * 1.입력으로 초기화. 이때, 최소값을 연간 이용권가격으로 설정.
  * 2.최저가 조합을 찾는 재귀 실행.
- * 		2-1.만약 현재 합이 최소값을 이미 넘어섰다면 return.
- * 		2-2.현재 달 수가 12월을 넘어섰다면 최솟값을 갱신한다. (11월에 3개월 이용권을 사는 경우)
+ *      2-1.만약 현재 합이 최소값을 이미 넘어섰다면 return.
+ *      2-2.현재 달 수가 12월을 넘어섰다면 최솟값을 갱신한다. (11월에 3개월 이용권을 사는 경우)
  * 
  * 
  *
@@ -23,53 +23,58 @@ public class Solution {
 	static short[] planFeeInfo = new short[4];
 	static short[] monthlyUsageInfo = new short[12];
 	static short feeSum;
-	static int minFee;
-	static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-	static StreamTokenizer tokenizer = new StreamTokenizer(reader);
+	static int[] minFee;
 
 	static StringBuilder builder = new StringBuilder();
 
-	static void init() throws IOException {
+	static void init(StreamTokenizer tokenizer) throws IOException {
 
 		for (int idx = 0; idx < planFeeInfo.length; idx++) {
-			planFeeInfo[idx] = readShort();
+			planFeeInfo[idx] = readShort(tokenizer);
 		}
 
-		minFee = planFeeInfo[3];
+		minFee = new int[13];
 		for (int idx = 0; idx < monthlyUsageInfo.length; idx++) {
-			monthlyUsageInfo[idx] = readShort();
+			monthlyUsageInfo[idx] = readShort(tokenizer);
 		}
+
 	}
 
-	static void findBestPlan(int currentSum, int month) {
-		if (currentSum > minFee)
-			return;
+	static void findBestPlan() {
 
-		if (month >= 12) {
-			minFee = Math.min(minFee, currentSum);
-			return;
+		for (int month = 1; month <= 12; ++month) {
+
+			int ifDaily = minFee[month - 1] + monthlyUsageInfo[month - 1] * planFeeInfo[0];
+			int ifMonthly = minFee[month - 1] + planFeeInfo[1];
+
+			minFee[month] = Math.min(ifDaily, ifMonthly);
+
+			if (month >= 3) {
+				int ifTriple = minFee[month - 3] + planFeeInfo[2];
+				minFee[month] = Math.min(ifTriple, minFee[month]);
+			}
 		}
 
-		findBestPlan(currentSum + monthlyUsageInfo[month] * planFeeInfo[0], month + 1);
-		findBestPlan(currentSum + planFeeInfo[1], month + 1);
-		if (month < 10)
-			findBestPlan(currentSum + planFeeInfo[2], month + 3);
+		minFee[12] = Math.min(minFee[12], planFeeInfo[3]);
 	}
 
 	public static void main(String[] args) throws IOException {
 
-		short testCount = readShort();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		StreamTokenizer tokenizer = new StreamTokenizer(reader);
+
+		short testCount = readShort(tokenizer);
 
 		for (int testNumber = 1; testNumber <= testCount; testNumber++) {
-			init();
-			findBestPlan(0, 0);
+			init(tokenizer);
+			findBestPlan();
 
-			builder.append('#').append(testNumber).append(' ').append(minFee).append('\n');
+			builder.append('#').append(testNumber).append(' ').append(minFee[12]).append('\n');
 		}
 		System.out.println(builder);
 	}
 
-	static short readShort() throws IOException {
+	static short readShort(StreamTokenizer tokenizer) throws IOException {
 		tokenizer.nextToken();
 		return (short) tokenizer.nval;
 	}
