@@ -2,27 +2,39 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Solution {
 
 	private static int studentNumber;
 	private static int compareCount;
 
-	private static boolean[][] students;
+	private static List<Integer>[] students;
+	private static List<Integer>[] reverse;
+
 	private static boolean[] visited;
 
 	private static void init(StreamTokenizer tokenizer) throws IOException {
 		studentNumber = read(tokenizer);
 		compareCount = read(tokenizer);
 
-		students = new boolean[studentNumber + 1][studentNumber + 1];
+		students = new List[studentNumber + 1];
+		reverse = new List[studentNumber + 1];
 		visited = new boolean[studentNumber + 1];
 		for (int count = 0; count < compareCount; count++) {
 			int smaller = read(tokenizer);
 			int bigger = read(tokenizer);
 
-			students[smaller][bigger] = true;
+			if (students[smaller] == null)
+				students[smaller] = new ArrayList<>();
+			students[smaller].add(bigger);
+
+			if (reverse[bigger] == null)
+				reverse[bigger] = new ArrayList<>();
+
+			reverse[bigger].add(smaller);
 		}
 	}
 
@@ -33,7 +45,7 @@ public class Solution {
 			int visitable = dfs(cur, 0, true);
 			Arrays.fill(visited, false);
 			int reversedVisitable = dfs(cur, 0, false);
-
+			//			System.out.println(visitable + reversedVisitable);
 			if ((visitable + reversedVisitable) == studentNumber + 1)
 				++counter;
 		}
@@ -45,19 +57,17 @@ public class Solution {
 		visited[cur] = true;
 
 		int counter = 1;
-		for (int idx = 1; idx <= studentNumber; ++idx) {
-			if (visited[idx])
-				continue;
 
-			if (mode) {
-				if (students[cur][idx])
-					counter += dfs(idx, sum + 1, mode);
-			}
-			else {
-				if (students[idx][cur])
-					counter += dfs(idx, sum + 1, mode);
-			}
+		if (mode && students[cur] != null) {
+			for (int next : students[cur])
+				if (!visited[next])
+					counter += dfs(next, sum + 1, mode);
+		}
 
+		else if (!mode && reverse[cur] != null) {
+			for (int next : reverse[cur])
+				if (!visited[next])
+					counter += dfs(next, sum + 1, mode);
 		}
 
 		return counter;
