@@ -10,7 +10,6 @@ public class Solution {
 	private static int compareCount;
 
 	private static boolean[][] students;
-	private static boolean[][] reversed;
 	private static boolean[] visited;
 
 	private static void init(StreamTokenizer tokenizer) throws IOException {
@@ -18,14 +17,12 @@ public class Solution {
 		compareCount = read(tokenizer);
 
 		students = new boolean[studentNumber + 1][studentNumber + 1];
-		reversed = new boolean[studentNumber + 1][studentNumber + 1];
 		visited = new boolean[studentNumber + 1];
 		for (int count = 0; count < compareCount; count++) {
 			int smaller = read(tokenizer);
 			int bigger = read(tokenizer);
 
 			students[smaller][bigger] = true;
-			reversed[bigger][smaller] = true;
 		}
 	}
 
@@ -37,7 +34,6 @@ public class Solution {
 			Arrays.fill(visited, false);
 			int reversedVisitable = dfs(cur, 0, false);
 
-			
 			if ((visitable + reversedVisitable) == studentNumber + 1)
 				++counter;
 		}
@@ -58,7 +54,7 @@ public class Solution {
 					counter += dfs(idx, sum + 1, mode);
 			}
 			else {
-				if (reversed[cur][idx])
+				if (students[idx][cur])
 					counter += dfs(idx, sum + 1, mode);
 			}
 
