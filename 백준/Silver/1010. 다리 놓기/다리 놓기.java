@@ -14,6 +14,12 @@ public class Main {
 		return (int) tokenizer.nval;
 	}
 
+	private static void init(StreamTokenizer tokenizer) throws IOException {
+		west = read(tokenizer);
+		east = read(tokenizer);
+		dp = new int[west + 1][east + 1];
+	}
+
 	private static int dp(int maxWest, int maxEast) {
 
 		if (dp[maxWest][maxEast] > 0)
@@ -28,17 +34,13 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		StreamTokenizer tokenizer = new StreamTokenizer(reader);
-
+		StringBuilder builder = new StringBuilder();
 		int testCase = read(tokenizer);
 
 		while (testCase-- > 0) {
-			west = read(tokenizer);
-			east = read(tokenizer);
-			dp = new int[west + 1][east + 1];
-
-			int result = dp(west, east);
-
-			System.out.println(result);
+			init(tokenizer);
+			builder.append(dp(west, east)).append('\n');
 		}
+		System.out.println(builder);
 	}
 }
