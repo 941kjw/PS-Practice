@@ -3,6 +3,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
+/**
+ * 
+ * DP를 이용한 냅색 문제
+ * 
+ * 제한된 부피 내에서 가장 가치의 합이 큰 경우를 구해야 한다.
+ * 
+ * 1.각 물건에 대해서
+ * 	1-1.최대 부피에서, 현재 물건의 부피까지
+ * 		1-1-1.현재 부피 제한에서 최댓값을 구한다. 이전에 기록했던 최대치와, 현재 물건을 추가할 수 있던 시점의 최댓값에서 물건의 가치만큼 더한 값을 비교한다. 
+ *
+ */
 public class Solution {
 
 	private static ObjectInfo[] objectInfos;
@@ -29,11 +40,7 @@ public class Solution {
 		int[] dp = new int[maxVolume + 1];
 
 		for (int idx = 0; idx < objectInfos.length; ++idx) {
-			for (int curWeight = maxVolume; curWeight > 0; --curWeight) {
-
-				if (curWeight - objectInfos[idx].volume < 0)
-					continue;
-
+			for (int curWeight = maxVolume; curWeight >= objectInfos[idx].volume; --curWeight) {
 				dp[curWeight] = Math.max(dp[curWeight], dp[curWeight - objectInfos[idx].volume] + objectInfos[idx].value);
 			}
 		}
