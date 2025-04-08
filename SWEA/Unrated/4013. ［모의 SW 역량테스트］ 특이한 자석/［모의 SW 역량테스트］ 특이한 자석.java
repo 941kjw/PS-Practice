@@ -5,13 +5,10 @@ import java.io.StreamTokenizer;
 
 /**
  * 
- * DP를 이용한 냅색 문제
+ * 기어를 회전할 때, 양 옆 기어의 마주보고있는 톱니의 극성이 다를 경우, 반대 방향으로 같이 회전한다.
  * 
- * 제한된 부피 내에서 가장 가치의 합이 큰 경우를 구해야 한다.
- * 
- * 1.각 물건에 대해서
- * 	1-1.최대 부피에서, 현재 물건의 부피까지
- * 		1-1-1.현재 부피 제한에서 최댓값을 구한다. 이전에 기록했던 최대치와, 현재 물건을 추가할 수 있던 시점의 최댓값에서 물건의 가치만큼 더한 값을 비교한다. 
+ *  1. 기어의 극성 정보를 int형 데이터 내에 비트 연산으로 입력받는다.
+ *  2. 기어 회전을 시뮬레이션한다.
  *
  */
 public class Solution {
@@ -43,7 +40,7 @@ public class Solution {
 			spreadRotationEffect(rotateTarget, direction);
 		}
 		int score = 0;
-		for (int idx = 1; idx < 5; idx++) {
+		for (int idx = 1; idx < 5; ++idx) {
 			if ((gears[idx] & (1 << posToIdx(pos[idx]))) != 0) {
 				score += (1 << (idx - 1));
 			}
@@ -53,6 +50,7 @@ public class Solution {
 
 	private static void spreadRotationEffect(int target, int direction) {
 		visited[target] = true;
+
 		if (target - 1 > 0 && !visited[target - 1] && checkAffected(target - 1, target))
 			spreadRotationEffect(target - 1, -1 * direction);
 
@@ -71,18 +69,6 @@ public class Solution {
 			pos[target] -= 8;
 	}
 
-	private static void print() {
-		for (int idx = 1; idx <= 4; ++idx) {
-			for (int i = 7; i > -1; --i) {
-				if (i == posToIdx(pos[idx]))
-					System.out.print('x');
-				else
-					System.out.print((gears[idx] >> i) & 1);
-			}
-			System.out.println();
-		}
-	}
-
 	private static boolean checkAffected(int left, int right) {
 
 		int leftFacingTeeth = pos[left] + 2;
@@ -97,8 +83,8 @@ public class Solution {
 		leftFacingTeeth = posToIdx(leftFacingTeeth);
 		rightFacingTeeth = posToIdx(rightFacingTeeth);
 
-		int leftPole = (gears[left] & (1 << leftFacingTeeth)) == 0 ? 0 : 1;
-		int rightPole = (gears[right] & (1 << rightFacingTeeth)) == 0 ? 0 : 1;
+		int leftPole = (gears[left] >> leftFacingTeeth) & 1;
+		int rightPole = (gears[right] >> rightFacingTeeth) & 1;
 
 		return leftPole != rightPole;
 	}
@@ -118,7 +104,7 @@ public class Solution {
 		StringBuilder builder = new StringBuilder();
 		int testCount = read(tokenizer);
 
-		for (int testNumber = 1; testNumber <= testCount; testNumber++) {
+		for (int testNumber = 1; testNumber <= testCount; ++testNumber) {
 			init(tokenizer);
 			builder.append('#').append(testNumber).append(' ').append(simulateRotation(tokenizer)).append('\n');
 		}
