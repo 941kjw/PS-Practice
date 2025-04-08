@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
-import java.util.Arrays;
 
 /**
  * 
@@ -25,10 +24,11 @@ public class Solution {
 	private static void init(StreamTokenizer tokenizer) throws IOException {
 		rotationCount = read(tokenizer);
 
-		Arrays.fill(gears, 0);
-		Arrays.fill(pos, 0);
+		gears = new int[4];
+		pos = new int[4];
+		visited = new boolean[4];
 
-		for (int idx = 1; idx <= 4; ++idx) {
+		for (int idx = 0; idx < 4; ++idx) {
 			for (int gearTeeth = 0; gearTeeth < 8; ++gearTeeth) {
 				gears[idx] <<= 1;
 				gears[idx] |= read(tokenizer);
@@ -38,15 +38,15 @@ public class Solution {
 
 	private static int simulateRotation(StreamTokenizer tokenizer) throws IOException {
 		while (rotationCount-- > 0) {
-			int rotateTarget = read(tokenizer);
+			int rotateTarget = read(tokenizer) - 1;
 			int direction = read(tokenizer);
 
 			spreadRotationEffect(rotateTarget, direction);
 		}
 		int score = 0;
-		for (int idx = 1; idx < 5; ++idx) {
-			if ((gears[idx] & (1 << posToIdx(pos[idx]))) != 0) {
-				score += (1 << (idx - 1));
+		for (int idx = 0; idx < 4; ++idx) {
+			if ((gears[idx] >> posToIdx(pos[idx]) & 1) != 0) {
+				score += (1 << idx);
 			}
 		}
 		return score;
@@ -55,10 +55,10 @@ public class Solution {
 	private static void spreadRotationEffect(int target, int direction) {
 		visited[target] = true;
 
-		if (target - 1 > 0 && !visited[target - 1] && checkAffected(target - 1, target))
+		if (target - 1 > -1 && !visited[target - 1] && checkAffected(target - 1, target))
 			spreadRotationEffect(target - 1, -1 * direction);
 
-		if (target + 1 < 5 && !visited[target + 1] && checkAffected(target, target + 1))
+		if (target + 1 < 4 && !visited[target + 1] && checkAffected(target, target + 1))
 			spreadRotationEffect(target + 1, -1 * direction);
 
 		rotate(target, direction);
@@ -107,10 +107,6 @@ public class Solution {
 		StreamTokenizer tokenizer = new StreamTokenizer(reader);
 		StringBuilder builder = new StringBuilder();
 		int testCount = read(tokenizer);
-
-		gears = new int[5];
-		pos = new int[5];
-		visited = new boolean[5];
 
 		for (int testNumber = 1; testNumber <= testCount; ++testNumber) {
 			init(tokenizer);
