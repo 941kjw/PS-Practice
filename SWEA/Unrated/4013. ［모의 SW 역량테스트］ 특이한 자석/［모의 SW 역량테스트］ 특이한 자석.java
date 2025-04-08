@@ -2,13 +2,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
+import java.util.Arrays;
 
 /**
  * 
  * 기어를 회전할 때, 양 옆 기어의 마주보고있는 톱니의 극성이 다를 경우, 반대 방향으로 같이 회전한다.
  * 
  *  1. 기어의 극성 정보를 int형 데이터 내에 비트 연산으로 입력받는다.
- *  2. 기어 회전을 시뮬레이션한다.
+ *  2. 기어 회전을 시뮬레이션한다. 이때, 주변을 회전시키기 전 자기가 먼저 회전하면 극성이 엉망이 되므로 주의하자.
+ *  	2-1. 좌/우 방향으로 회전을 전파한다.
+ *  	2-2. 자기 자신을 회전시킨다.
+ *  3. 
  *
  */
 public class Solution {
@@ -20,9 +24,9 @@ public class Solution {
 
 	private static void init(StreamTokenizer tokenizer) throws IOException {
 		rotationCount = read(tokenizer);
-		gears = new int[5];
-		pos = new int[5];
-		visited = new boolean[5];
+
+		Arrays.fill(gears, 0);
+		Arrays.fill(pos, 0);
 
 		for (int idx = 1; idx <= 4; ++idx) {
 			for (int gearTeeth = 0; gearTeeth < 8; ++gearTeeth) {
@@ -103,6 +107,10 @@ public class Solution {
 		StreamTokenizer tokenizer = new StreamTokenizer(reader);
 		StringBuilder builder = new StringBuilder();
 		int testCount = read(tokenizer);
+
+		gears = new int[5];
+		pos = new int[5];
+		visited = new boolean[5];
 
 		for (int testNumber = 1; testNumber <= testCount; ++testNumber) {
 			init(tokenizer);
