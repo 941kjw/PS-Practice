@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
 /**
-특정 지점에서, 말이 최대한 움직일 수 있는 경로의 길이는 어떠한 방향에서 들어오든 동일합니다.
+특정 지점에서, 중복 알파벳을 사용하지 않고 만들 수 있는 경로의 길이는 어떠한 방향에서 들어오든 동일합니다.
 따라서, 이를 기록해두면 재사용이 가능합니다.
 */
 public class Main {
