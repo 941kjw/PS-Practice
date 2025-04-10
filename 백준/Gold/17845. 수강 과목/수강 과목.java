@@ -7,7 +7,7 @@ public class Main {
 
 	private static int maxStudyTime;
 	private static int subjectCount;
-	private static int[][] dp;
+	private static int[] dp;
 	private static Subject[] subjects;
 
 	private static int read(StreamTokenizer tokenizer) throws IOException {
@@ -20,7 +20,7 @@ public class Main {
 		subjectCount = read(tokenizer);
 
 		subjects = new Subject[subjectCount + 1];
-		dp = new int[maxStudyTime + 1][subjectCount + 1];
+		dp = new int[maxStudyTime + 1];
 
 		for (int idx = 1; idx <= subjectCount; idx++) {
 			int importance = read(tokenizer);
@@ -31,16 +31,17 @@ public class Main {
 	}
 
 	private static int findCombination() {
-		for (int timeLimit = 1; timeLimit <= maxStudyTime; ++timeLimit) {
-			for (int idx = 1; idx <= subjectCount; ++idx) {
-				if (timeLimit >= subjects[idx].timeRequired)
-					dp[timeLimit][idx] = Math.max(dp[timeLimit][idx - 1], dp[timeLimit - subjects[idx].timeRequired][idx - 1] + subjects[idx].importance);
-				else
-					dp[timeLimit][idx] = dp[timeLimit][idx - 1];
+
+		for (int idx = 1; idx <= subjectCount; ++idx) {
+			int imp = subjects[idx].importance;
+			int time = subjects[idx].timeRequired;
+
+			for (int t = maxStudyTime; t >= time; t--) {
+				dp[t] = Math.max(dp[t], dp[t - time] + imp);
 			}
 		}
 
-		return dp[maxStudyTime][subjectCount];
+		return dp[maxStudyTime];
 	}
 
 	public static void main(String[] args) throws IOException {
