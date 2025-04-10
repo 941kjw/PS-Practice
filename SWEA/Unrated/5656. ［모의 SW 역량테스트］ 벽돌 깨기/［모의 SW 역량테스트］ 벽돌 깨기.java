@@ -2,7 +2,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
+/**
+ * 구슬을 낙하시켜서 벽돌을 폭파시킨다.
+ * 각 벽돌에 써진 숫자만큼 상하좌우로 폭발하며, 연쇄 폭발이 가능하다.
+ * 
+ * 
+ *
+ */
 public class Solution {
 	private static int[] dy = { -1, 1, 0, 0 };
 	private static int[] dx = { 0, 0, -1, 1 };
@@ -56,7 +65,8 @@ public class Solution {
 	}
 
 	private static int throwBeads() {
-
+		if (max == 0)
+			return 0;
 		for (int pos : selected) {
 			for (int row = 0; row < height; ++row) {
 				if (copy[row][pos] != 0) {
@@ -104,27 +114,54 @@ public class Solution {
 	}
 
 	private static void explode(int row, int col) {
-
-		int length = copy[row][col];
+		Queue<int[]> q = new ArrayDeque<>();
+		if (copy[row][col] > 1)
+			q.offer(new int[] { row, col, copy[row][col] });
 		copy[row][col] = 0;
 
-		if (length <= 1)
-			return;
+		while (!q.isEmpty()) {
+			int[] cur = q.poll();
+			int cy = cur[0], cx = cur[1], length = cur[2];
 
-		for (int dir = 0; dir < 4; ++dir) {
-			for (int curLength = 1; curLength < length; ++curLength) {
-				int nrow = row + dy[dir] * curLength;
-				int ncol = col + dx[dir] * curLength;
+			for (int dir = 0; dir < 4; ++dir) {
+				for (int curLength = 1; curLength < length; ++curLength) {
+					int ny = cy + dy[dir] * curLength;
+					int nx = cx + dx[dir] * curLength;
+					if (ny < 0 || ny >= height || nx < 0 || nx >= width)
+						break;
+					if (copy[ny][nx] == 0)
+						continue;
 
-				if (nrow < 0 || nrow >= height || ncol < 0 || ncol >= width)
-					break;
-				if (copy[nrow][ncol] == 0)
-					continue;
-				explode(nrow, ncol);
+					if (copy[ny][nx] > 1)
+						q.offer(new int[] { ny, nx, copy[ny][nx] });
+					copy[ny][nx] = 0;
+				}
 			}
 		}
-
 	}
+
+	//	private static void explode(int row, int col) {
+	//
+	//		int length = copy[row][col];
+	//		copy[row][col] = 0;
+	//
+	//		if (length <= 1)
+	//			return;
+	//
+	//		for (int dir = 0; dir < 4; ++dir) {
+	//			for (int curLength = 1; curLength < length; ++curLength) {
+	//				int nrow = row + dy[dir] * curLength;
+	//				int ncol = col + dx[dir] * curLength;
+	//
+	//				if (nrow < 0 || nrow >= height || ncol < 0 || ncol >= width)
+	//					break;
+	//				if (copy[nrow][ncol] == 0)
+	//					continue;
+	//				explode(nrow, ncol);
+	//			}
+	//		}
+	//
+	//	}
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
