@@ -76,7 +76,8 @@ public class Solution {
 					deactivatedCells.add(cur);
 				}
 			}
-			pQueue.addAll(deactivatedCells);
+			for (Cell item : deactivatedCells)
+				pQueue.add(item);
 			deactivatedCells.clear();
 		}
 		return pQueue.size();
