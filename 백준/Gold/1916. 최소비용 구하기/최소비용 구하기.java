@@ -52,22 +52,32 @@ public class Main {
 
         int[] distance = new int[cityCount];
         boolean[] visited = new boolean[cityCount];
+
         Arrays.fill(distance, Integer.MAX_VALUE);
         distance[start] = 0;
 
-        PriorityQueue<Edge> q = new PriorityQueue<>(Comparator.comparingInt(e -> e.cost));
-        q.add(new Edge(start, 0));
+        PriorityQueue<Edge> pq = new PriorityQueue<>(Comparator.comparingInt(e -> e.cost));
+        pq.add(new Edge(start, 0));
 
-        while (!q.isEmpty()) {
-            Edge e = q.poll();
-            if (!visited[e.to]) {
-                visited[e.to] = true;
+        while (!pq.isEmpty()) {
+            Edge e = pq.poll();
 
-                for (Edge d : busInfo.get(e.to)) {
-                    if (!visited[d.to] && distance[d.to] > e.cost + d.cost) {
-                        distance[d.to] = e.cost + d.cost;
-                        q.add(new Edge(d.to, distance[d.to]));
-                    }
+            if (visited[e.to]) {
+                continue;
+            }
+
+            visited[e.to] = true;
+
+            for (Edge d : busInfo.get(e.to)) {
+                if (visited[d.to]) {
+                    continue;
+                }
+
+                int newDistance = e.cost + d.cost;
+
+                if (distance[d.to] > newDistance) {
+                    distance[d.to] = newDistance;
+                    pq.add(new Edge(d.to, newDistance));
                 }
             }
         }
@@ -84,7 +94,6 @@ public class Main {
         }
     }
 
-
     private static void clear() throws IOException {
         reader.close();
         writer.close();
@@ -99,10 +108,5 @@ public class Main {
     private static int getNumber() throws IOException {
         tokenizer.nextToken();
         return (int) tokenizer.nval;
-    }
-
-    private static String getString() throws IOException {
-        tokenizer.nextToken();
-        return tokenizer.sval;
     }
 }
