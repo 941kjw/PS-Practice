@@ -39,11 +39,6 @@ public class Main {
             if (command.equals("I")) {
                 maxQ.add(number);
                 minQ.add(number);
-
-                if (countMap.get(number) == null) {
-                    countMap.put(number, 1);
-                    continue;
-                }
                 countMap.merge(number, 1, Integer::sum);
             }
 
