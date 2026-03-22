@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StreamTokenizer;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.TreeMap;
 
 public class Main {
 
@@ -26,62 +23,41 @@ public class Main {
     }
 
     private static void simulate() throws IOException {
-        PriorityQueue<Integer> maxQ = new PriorityQueue<>(Collections.reverseOrder());
-        PriorityQueue<Integer> minQ = new PriorityQueue<>();
-        Map<Integer, Integer> countMap = new HashMap<>();
-
+        TreeMap<Integer, Integer> map = new TreeMap<>();
         int commandCount = getNumber();
-
         for (int i = 0; i < commandCount; ++i) {
             String command = getString();
-
             int number = getNumber();
             if (command.equals("I")) {
-                maxQ.add(number);
-                minQ.add(number);
-                countMap.merge(number, 1, Integer::sum);
-            }
-
-            if (command.equals("D")) {
+                map.merge(number, 1, Integer::sum);
+            } else if (command.equals("D")) {
+                if (map.isEmpty()) {
+                    continue;
+                }
                 if (number == 1) {
-                    while (!maxQ.isEmpty() && countMap.getOrDefault(maxQ.peek(), 0) == 0) {
-                        maxQ.poll();
+                    // 최대값 삭제
+                    int max = map.lastKey();
+                    if (map.get(max) == 1) {
+                        map.pollLastEntry();
+                    } else {
+                        map.put(max, map.get(max) - 1);
                     }
-                    if (!maxQ.isEmpty()) {
-                        int top = maxQ.poll();
-                        countMap.compute(top, (k, v) -> v - 1);
-                    }
-                }
-                if (number == -1) {
-                    while (!minQ.isEmpty() && countMap.getOrDefault(minQ.peek(), 0) == 0) {
-                        minQ.poll();
-                    }
-                    if (!minQ.isEmpty()) {
-                        int top = minQ.poll();
-                        countMap.compute(top, (k, v) -> v - 1);
+                } else {
+                    // 최소값 삭제
+                    int min = map.firstKey();
+                    if (map.get(min) == 1) {
+                        map.pollFirstEntry();
+                    } else {
+                        map.put(min, map.get(min) - 1);
                     }
                 }
             }
         }
-
-        while (!maxQ.isEmpty() && countMap.getOrDefault(maxQ.peek(), 0) == 0) {
-            maxQ.poll();
-        }
-
-        Integer max = maxQ.isEmpty() ? null : maxQ.poll();
-
-        while (!minQ.isEmpty() && countMap.getOrDefault(minQ.peek(), 0) == 0) {
-            minQ.poll();
-        }
-
-        Integer min = minQ.isEmpty() ? null : minQ.poll();
-
-        if (max == null || min == null) {
+        if (map.isEmpty()) {
             writer.write("EMPTY\n");
-            return;
+        } else {
+            writer.write(map.lastKey() + " " + map.firstKey() + "\n");
         }
-
-        writer.write(max + " " + min + "\n");
     }
 
 
