@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StreamTokenizer;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class Main {
@@ -35,20 +36,18 @@ public class Main {
                     continue;
                 }
                 if (number == 1) {
-                    // 최대값 삭제
-                    int max = map.lastKey();
-                    if (map.get(max) == 1) {
+                    Map.Entry<Integer, Integer> entry = map.lastEntry();
+                    if (entry.getValue() == 1) {
                         map.pollLastEntry();
                     } else {
-                        map.put(max, map.get(max) - 1);
+                        map.put(entry.getKey(), entry.getValue() - 1);
                     }
                 } else {
-                    // 최소값 삭제
-                    int min = map.firstKey();
-                    if (map.get(min) == 1) {
+                    Map.Entry<Integer, Integer> entry = map.firstEntry();
+                    if (entry.getValue() == 1) {
                         map.pollFirstEntry();
                     } else {
-                        map.put(min, map.get(min) - 1);
+                        map.put(entry.getKey(), entry.getValue() - 1);
                     }
                 }
             }
