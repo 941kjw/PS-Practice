@@ -1,14 +1,13 @@
-import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StreamTokenizer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Queue;
 
 public class Main {
 
@@ -25,82 +24,86 @@ public class Main {
         int N = getNumber();
         int M = getNumber();
 
-        int[][] map = new int[N][M];
+        boolean[][] map = new boolean[N][M];
         List<Point> cheeseList = new ArrayList<>();
         for (int i = 0; i < N; ++i) {
             for (int j = 0; j < M; ++j) {
-                map[i][j] = getNumber();
-                if (map[i][j] == 1) {
-                    cheeseList.add(new Point(i, j));
-                }
+                map[i][j] = getNumber() == 1;
             }
         }
 
-        simulate(map, cheeseList);
+        simulate(map);
 
         clear();
     }
 
-    private static void simulate(int[][] map, List<Point> cheeseList) throws IOException {
-        int timeCount = 0;
+    private static void simulate(boolean[][] map) throws IOException {
+        Deque<Point> queue = new ArrayDeque<>();
 
-        while (!cheeseList.isEmpty()) {
-            ++timeCount;
-            map = markAir(map);
+        int col = map[0].length;
+        int row = map.length;
 
-            for (int idx = 0; idx < cheeseList.size(); ++idx) {
-                int x = cheeseList.get(idx).x;
-                int y = cheeseList.get(idx).y;
-
-                int count = 0;
-
-                for (int i = 0; i < 4; ++i) {
-                    int nx = x + dx[i];
-                    int ny = y + dy[i];
-
-                    if (map[nx][ny] == 2) {
-                        ++count;
-                    }
-                }
-
-                if (count >= 2) {
-                    map[x][y] = 0;
-                    cheeseList.remove(idx);
-                    --idx;
-                }
-            }
+        for (int c = 0; c < col; ++c) {
+            queue.add(new Point(0, c, 0));
+            queue.add(new Point(row - 1, c, 0));
         }
-        writer.write(Integer.toString(timeCount));
-    }
 
-    private static int[][] markAir(int[][] map) {
-        boolean[][] visited = new boolean[map.length][map[0].length];
+        for (int r = 1; r < row - 1; ++r) {
+            queue.add(new Point(r, 0, 0));
+            queue.add(new Point(r, col - 1, 0));
+        }
 
-        Queue<Point> queue = new LinkedList<>();
-        queue.add(new Point(0, 0));
-        visited[0][0] = true;
-        map[0][0] = 2;
+        int[][] board = new int[row][col];
+        boolean[][] visited = new boolean[row][col];
+
+        int time = 0;
 
         while (!queue.isEmpty()) {
-            int x = queue.peek().x;
-            int y = queue.poll().y;
+            Point cur = queue.poll();
 
-            for (int i = 0; i < 4; ++i) {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
+            if (visited[cur.row][cur.col]) {
+                continue;
+            }
 
-                if (nx < 0 || nx >= map.length || ny < 0 || ny >= map[0].length || map[nx][ny] == 1
-                        || visited[nx][ny]) {
+            visited[cur.row][cur.col] = true;
+            time = cur.day;
+
+            for (int dir = 0; dir < 4; ++dir) {
+                int nr = cur.row + dx[dir];
+                int nc = cur.col + dy[dir];
+
+                if (isOut(row, col, nr, nc) || visited[nr][nc]) {
                     continue;
                 }
 
-                map[nx][ny] = 2;
-                queue.add(new Point(nx, ny));
-                visited[nx][ny] = true;
+                if (!map[nr][nc]) {
+                    queue.addFirst(new Point(nr, nc, cur.day));
+                    continue;
+                }
+
+                if (++board[nr][nc] > 1) {
+                    queue.addLast(new Point(nr, nc, cur.day + 1));
+                }
+
             }
         }
 
-        return map;
+        writer.write(Integer.toString(time));
+    }
+
+    private static boolean isOut(int row, int col, int r, int c) {
+        return 0 > r || r >= row || 0 > c || c >= col;
+    }
+
+
+    private static class Point {
+        int row, col, day;
+
+        public Point(int row, int col, int day) {
+            this.row = row;
+            this.col = col;
+            this.day = day;
+        }
     }
 
 
