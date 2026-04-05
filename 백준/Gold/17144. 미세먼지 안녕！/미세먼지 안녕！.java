@@ -69,7 +69,23 @@ public class Main {
                 if (map[i][j] <= 0) {
                     continue;
                 }
-                spreadSingle(i, j, R, C, map, after);
+
+                int spreadAmount = map[i][j] / 5;
+                int count = 0;
+
+                for (int d = 0; d < 4; ++d) {
+                    int nx = i + dx[d];
+                    int ny = j + dy[d];
+
+                    if (nx < 0 || nx >= R || ny < 0 || ny >= C || map[nx][ny] == -1) {
+                        continue;
+                    }
+
+                    after[nx][ny] += spreadAmount;
+                    ++count;
+                }
+
+                after[i][j] += map[i][j] - spreadAmount * count;
             }
         }
 
@@ -114,35 +130,6 @@ public class Main {
         }
 
         map[bottom][1] = 0;
-    }
-
-
-    private static void spreadSingle(int i, int j, int R, int C, int[][] map, int[][] after) {
-        int spreadAmount = calcSpreadAmount(map[i][j]);
-        int count = 0;
-
-        for (int idx = 0; idx < 4; ++idx) {
-            int nx = i + dx[idx];
-            int ny = j + dy[idx];
-
-            if (isOut(R, C, nx, ny) || map[nx][ny] == -1) {
-                continue;
-            }
-
-            ++count;
-
-            after[nx][ny] += spreadAmount;
-        }
-
-        after[i][j] += map[i][j] - (spreadAmount * count);
-    }
-
-    private static int calcSpreadAmount(int original) {
-        return original / 5;
-    }
-
-    private static boolean isOut(int row, int col, int r, int c) {
-        return 0 > r || r >= row || 0 > c || c >= col;
     }
 
     private static void clear() throws IOException {
