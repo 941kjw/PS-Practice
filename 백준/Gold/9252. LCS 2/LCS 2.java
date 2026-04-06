@@ -23,40 +23,49 @@ public class Main {
     }
 
     private static void lcs(int[][] dp, String s1, String s2) throws IOException {
-        int s1len = s1.length();
-        int s2len = s2.length();
+        char[] a = s1.toCharArray();
+        char[] b = s2.toCharArray();
 
-        for (int i = 1; i < s1len + 1; ++i) {
-            for (int j = 1; j < s2len + 1; ++j) {
-                if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
-                    dp[i][j] = dp[i - 1][j - 1] + 1;
+        int n = a.length;
+        int m = b.length;
+
+        for (int i = 1; i <= n; ++i) {
+            int[] cur = dp[i];
+            int[] prev = dp[i - 1];
+            char ca = a[i - 1];
+
+            for (int j = 1; j <= m; ++j) {
+                if (ca == b[j - 1]) {
+                    cur[j] = prev[j - 1] + 1;
                 } else {
-                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                    cur[j] = Math.max(prev[j], cur[j - 1]);
                 }
             }
         }
 
-        writer.write(String.valueOf(dp[s1len][s2len]));
+        writer.write(String.valueOf(dp[n][m]));
 
-        if (dp[s1len][s2len] > 0) {
-            StringBuilder b = new StringBuilder();
+        if (dp[n][m] > 0) {
+            int len = dp[n][m];
+            char[] ans = new char[len];
+            int idx = len - 1;
 
-            int x = s1len;
-            int y = s2len;
+            int x = n;
+            int y = m;
 
             while (x > 0 && y > 0) {
-                if (s1.charAt(x - 1) == s2.charAt(y - 1)) {
-                    b.append(s1.charAt(x - 1));
+                if (a[x - 1] == b[y - 1]) {
+                    ans[idx--] = a[x - 1];
                     --x;
                     --y;
-                } else if (dp[x - 1][y] > dp[x][y - 1]) {
+                } else if (dp[x - 1][y] >= dp[x][y - 1]) {
                     --x;
                 } else {
                     --y;
                 }
             }
 
-            writer.write("\n" + b.reverse());
+            writer.write("\n" + String.valueOf(ans));
         }
     }
 
