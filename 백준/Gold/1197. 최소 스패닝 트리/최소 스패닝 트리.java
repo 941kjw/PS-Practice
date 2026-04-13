@@ -45,7 +45,9 @@ public class Main {
             int firstParent = findParent(edge.first, parent);
             int secondParent = findParent(edge.second, parent);
 
-            if (firstParent == secondParent) continue;
+            if (firstParent == secondParent) {
+                continue;
+            }
 
             sum += edge.weight;
             union(firstParent, secondParent, parent, rank);
@@ -62,14 +64,7 @@ public class Main {
         return parent[x] = findParent(parent[x], parent);
     }
 
-    private static void union(int a, int b, int[] parent, int[] rank) {
-        int rootA = findParent(a, parent);
-        int rootB = findParent(b, parent);
-
-        if (rootA == rootB) {
-            return;
-        }
-
+    private static void union(int rootA, int rootB, int[] parent, int[] rank) {
         if (rank[rootA] < rank[rootB]) {
             parent[rootA] = rootB;
         } else if (rank[rootA] > rank[rootB]) {
