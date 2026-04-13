@@ -21,6 +21,7 @@ public class Main {
         int e = getNumber();
 
         int[] parent = new int[v + 1];
+        int[] rank = new int[v + 1];
 
         for (int i = 0; i <= v; i++) {
             parent[i] = i;
@@ -44,16 +45,10 @@ public class Main {
             int firstParent = findParent(edge.first, parent);
             int secondParent = findParent(edge.second, parent);
 
-            if (firstParent == secondParent) {
-                continue;
-            }
+            if (firstParent == secondParent) continue;
 
             sum += edge.weight;
-
-            int min = Math.min(firstParent, secondParent);
-
-            parent[firstParent] = min;
-            parent[secondParent] = min;
+            union(firstParent, secondParent, parent, rank);
         }
 
         writer.write(String.valueOf(sum));
@@ -65,6 +60,24 @@ public class Main {
             return x;
         }
         return parent[x] = findParent(parent[x], parent);
+    }
+
+    private static void union(int a, int b, int[] parent, int[] rank) {
+        int rootA = findParent(a, parent);
+        int rootB = findParent(b, parent);
+
+        if (rootA == rootB) {
+            return;
+        }
+
+        if (rank[rootA] < rank[rootB]) {
+            parent[rootA] = rootB;
+        } else if (rank[rootA] > rank[rootB]) {
+            parent[rootB] = rootA;
+        } else {
+            parent[rootB] = rootA;
+            rank[rootA]++;
+        }
     }
 
 
