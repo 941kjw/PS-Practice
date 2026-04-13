@@ -7,17 +7,12 @@ import java.io.StreamTokenizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.w3c.dom.Node;
 
 public class Main {
 
     private static BufferedReader reader;
     private static BufferedWriter writer;
     private static StreamTokenizer tokenizer;
-
-    private static Node[] tree;
-    private static boolean[] visited;
-    private static int[][] dp;
 
     public static void main(String[] args) throws IOException {
         initReader();
