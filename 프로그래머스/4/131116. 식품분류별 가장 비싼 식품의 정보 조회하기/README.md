@@ -1,10 +1,10 @@
 # [level 4] 식품분류별 가장 비싼 식품의 정보 조회하기 - 131116 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131116) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131116?utm_source=chatgpt.com) 
 
 ### 성능 요약
 
-메모리: 0.0 MB, 시간: 0.00 ms
+메모리: undefined, 시간: 
 
 ### 구분
 
@@ -12,11 +12,11 @@
 
 ### 채점결과
 
-Empty
+합계: 100.0 / 100.0
 
 ### 제출 일자
 
-2024년 10월 21일 20:26:52
+2026년 08월 04일 18:15:48
 
 ### 문제 설명
 
